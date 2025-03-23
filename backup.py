@@ -41,9 +41,6 @@ def get_court_links(session):
         if not box:
             print("No court links found.")
             return []
-        links = box.find_all("a", string = lambda text: text and "daily" in text.lower())
-        for link in links:
-            print(link.get("href"))
         
         return [link.get("href") for link in box.find_all("a") if link.get("href")]
     except requests.RequestException as e:
@@ -52,7 +49,6 @@ def get_court_links(session):
 
 def search_cases(session, court_links, search_term="persons unknown"):
     """Searches for a specific term in all available court cases."""
-    print("in search cases")
     found_cases = []
     total_links = len(court_links)
 
@@ -96,7 +92,36 @@ def search_cases(session, court_links, search_term="persons unknown"):
 
     return found_cases
 
-# put back if needed! def get_court_list(session):
+def get_court_list(session):
+    """Retrieves a structured list of courts and their case links."""
+    try:
+        response = session.get(BASE_URL + "/courtlists/current/county/indexv2county.php")
+        soup = bs(response.text, "html.parser")
+        elements = soup.find_all("a", string=lambda text: text and "daily public" in text.lower())
+
+        for element in elements:
+            print(elements.get("href"), "::", element.text.strip)
+
+        courts = []
+        current_court = None
+        case_links = []
+
+        for elem in elements:
+            if elem.name == "strong":
+                if current_court:
+                    courts.append((current_court, case_links))
+                current_court = elem.get_text(strip=True)
+                case_links = []
+            elif elem.name == "a" and elem.get("href"):
+                case_links.append(elem.get("href"))
+
+        if current_court:
+            courts.append((current_court, case_links))
+
+        return courts
+    except requests.RequestException as e:
+        print(f"Failed to retrieve courts: {e}")
+        return []
 
 def search_court_by_name(court_name, courts):
     """Finds a specific court by name in the list."""
@@ -135,6 +160,7 @@ def user_interface():
         if option == "all":
             # get links
             court_links = get_court_links(session)
+            print(court_links)
             if not court_links:
                 print("No court links found.")
             else:

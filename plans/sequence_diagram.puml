@@ -1,0 +1,16 @@
+@startuml
+actor User
+participant "Web App"
+participant "Spring API"
+participant "Database"
+
+User -> "Web App": Enter name, landlord, court/date filters
+"Web App" -> "Spring API": Send search criteria
+"Spring API" -> "Database": Query court cases
+"Database" --> "Spring API": Matching records
+"Spring API" --> "Web App": Display results
+
+User -> "Web App": Subscribe to alerts
+"Web App" -> "Spring API": Store subscription
+"Spring API" -> "Database": Save user+criteria
+@enduml

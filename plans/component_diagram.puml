@@ -1,0 +1,28 @@
+@startuml
+package "User Interface" {
+  [Web App]
+}
+
+package "Back End (Spring Boot)" {
+  [User Management Service]
+  [Notification Service]
+  [Search & Filter API]
+}
+
+package "Scraper (Python)" {
+  [Court Scraper Script]
+}
+
+package "Database" {
+  [Court Cases]
+  [User Subscriptions]
+}
+
+[Web App] --> [Search & Filter API]
+[Web App] --> [User Management Service]
+[User Management Service] --> [User Subscriptions]
+[Court Scraper Script] --> [Court Cases]
+[Court Scraper Script] --> [Notification Service]
+[Notification Service] --> [User Subscriptions]
+[Notification Service] --> [Web App]
+@enduml
