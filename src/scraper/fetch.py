@@ -13,18 +13,21 @@ def get_court_links(session) -> list[str] :
         response = session.get(url)
         soup = bs(response.text, "html.parser")
 
+        # get the table with all the links in
         table = soup.find_all("table")[0]
 
         if not table:
             print("No tables found.")
             return []
-        
-        links = table.find_all("a", string = lambda text: text and "daily" in text.lower())
+        # find all anchor elements that have "daily" in their text field.
+        link_tags = table.find_all("a", string = lambda text: text and "daily" in text.lower())
 
-        for link in links:
-            print(link.get("href"))
-        # return [link.get("href") for link in box.find_all("a") if link.get("href")]
-        return[]
+        links = []
+        for link in link_tags:
+            links.append(link.get("href"))
+        
+        print (links)
+        return links
 
     except requests.RequestException as e:
         print(f"Failed to retrieve court links: {e}")
