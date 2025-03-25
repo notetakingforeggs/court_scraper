@@ -2,7 +2,10 @@
 
 - use spring jpa/hibernate to create tables in db
 - Scraper should scrape and add all the data to the db separately
-- make parent git to host both spring project and scraper in one repo
+    - use pandas to get all table data
+    - 
+- ~make parent git to host both spring project and scraper in one repo~ 
+
 
 
 ### Scraper
