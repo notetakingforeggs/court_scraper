@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV=/home/jonah/development/code/court_scraper/venv
+VIRTUAL_ENV=/home/jonah/development/code/whitechapel_advice/court_scraper/venv
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
