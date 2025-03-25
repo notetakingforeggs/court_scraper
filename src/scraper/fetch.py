@@ -16,7 +16,8 @@ def get_court_links(session : Session) -> list[str] :
         links = box.find_all("a", string = lambda text: text and "daily" in text.lower())
         for link in links:
             print(link.get("href"))
-        
+
+            
         return [link.get("href") for link in box.find_all("a") if link.get("href")]
     except requests.RequestException as e:
         print(f"Failed to retrieve court links: {e}")
