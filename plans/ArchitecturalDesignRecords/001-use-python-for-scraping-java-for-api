@@ -1,0 +1,17 @@
+# use python for scraping logic, and use java for backend api
+---
+
+### Context
+- im working on a python scraping script some friends wrote, but it feels like for it to work in the way that I want it to it needs to be embedded in a wider backend, to allow non techincal users.
+
+### Decision
+- keep the scraping in python (which seems to have more vouched for scraping exosystem), and build a spring MVC which hooks up to the same db to deliver the data to the users.
+
+### Alternatives Considered
+- considered scraping with java libraries, could have been fine but I would have to completely rewrite/translate the existing code, and the project would become less collaborative. Considered building out the web interface using python, which could have been fine, but I am reluctant to spread myself thin by learning/consolidating another framework and would rather really entrench my java/spring skillset first before branching out.
+
+### Consequences
+Hopefully will result in smooth and concise scraping pipelines, whilst also providing me the continuity and comfort of continuing to work in spring, and all the type safe compiled language goodness that is associated with it.
+
+### Status
+- Accepted
