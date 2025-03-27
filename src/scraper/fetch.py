@@ -1,6 +1,5 @@
 # from requests import Session
 import requests
-# from session import BASE_URL
 from bs4 import BeautifulSoup as bs
 from scraper.session import BASE_URL
 
@@ -36,7 +35,6 @@ def get_court_links(session) -> list[str] :
         for link in link_tags:
             links.append(link.get("href"))
         
-        print (links)
 
 
 
@@ -49,4 +47,3 @@ def get_court_links(session) -> list[str] :
         print(f"Failed to retrieve court links: {e}")
         return []
 
-get_court_links()
