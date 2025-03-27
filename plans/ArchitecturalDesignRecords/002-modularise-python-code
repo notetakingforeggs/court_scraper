@@ -1,0 +1,16 @@
+# Modularising python code
+---
+
+### Context
+- The initial scraping script was one file. having just come from working with encapsulated/modularised code this felt hard for me to navigate. 
+
+### Decision
+- Splitting up the function into different directories, interface for the CLI (makes sense to allow it to be swapped out for another UI later), scraper (which will hold as much of the scraping logic as possible), and then a main file to call these.
+
+### Alternatives Considered
+- leaving as it was which could have worked (?) but feels harder to follow, and maybe less extensible.
+
+### Consequences
+
+### Status
+- Accepted

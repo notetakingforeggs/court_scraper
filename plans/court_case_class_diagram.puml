@@ -1,0 +1,27 @@
+@startuml
+
+class CourtCase {
+  +UUID id
+  +long start_time_epoch
+  +string duration
+  +string case_id
+  +string claimant
+  +string defendant
+  +string hearing_type
+  +string hearing_channel
+}
+
+class Court {
+  +UUID id
+  +string name
+  +string city
+}
+
+class Region {
+  +UUID id
+  +string name
+}
+
+CourtCase "0..*" --> "1" Court : occurs at 
+Court "0..*" --> "1" Region : occurs in
+@enduml
