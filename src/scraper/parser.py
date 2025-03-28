@@ -1,5 +1,7 @@
 from scraper.models import CourtCase
-from scraper.session import BASE_URL
+from scraper.session import BASE_URL, login
+
+
 from bs4 import BeautifulSoup as bs
 import requests
 from scraper.city_set import CITY_SET;
@@ -7,20 +9,38 @@ from scraper.city_set import CITY_SET;
 def parse_cases(session, court_links): #-> list[CourtCase]:
     """ Get all the course case info from the list of links and put in db via objects."""
     print("in parser")
+    
 
     found_cases = []
     for link in court_links:
         
         try:
-            print(link)
+            print("trying to access link and get court case page html")
+            url = BASE_URL + link
+            
+            print(f"this is the url:{url}")
+            
+            #TODO the issue is session is not valid?
+            print("these are the headers")
+            print(session.headers)
+            
             # get soup for content of daily causes page
-            response = session.get(BASE_URL + link)
+            response = session.get(url)
+
+            print("Response Debug Print")
+            print(response.status_code)
+            print(response.url)
+            print(response.headers.get("Content-Type"))
+            print(response.text)
+        
+
             soup = bs(response.text, "html.parser")
+            # print("this is the text of the soup for the parser")
             box = soup.find("table", class_="MsoNormalTable")
             
             # are there cases where there is no box?
             if not box:
-                print("NOBOXNOXBOBXBX DO NOT CONTINUE")
+                print("couldnt find what im looking for?")
                 continue        
 
             # Extract court name + city

@@ -6,13 +6,15 @@ from scraper.session import BASE_URL
 # BASE_URL = "https://www.courtserve.net"
 
 
-def get_court_links(session) -> list[str] :
+def get_court_links() -> list[str] :
     """Retrieves all court links from the main court page."""
     print("getting court links")
     try:
         url = BASE_URL + "/courtlists/current/county/indexv2county.php"  
             
-        response = session.get(url)
+        # response = session.get(url)
+        response = requests.get(url)
+
         soup = bs(response.text, "html.parser")
 
         # get the table with all the links in
