@@ -1,5 +1,5 @@
 from scraper.models import CourtCase
-from scraper.session import BASE_URL, login
+from scraper.session import BASE_URL, login, is_logged_in
 
 
 from bs4 import BeautifulSoup as bs
@@ -28,13 +28,17 @@ def parse_cases(session, court_links): #-> list[CourtCase]:
             response = session.get(url)
 
             print("Response Debug Print")
-            print(response.status_code)
-            print(response.url)
-            print(response.headers.get("Content-Type"))
-            print(response.text)
+            # print(response.status_code)
+            # print(response.url)
+            # print(response.headers.get("Content-Type"))
+            # print(response.text)
         
 
             soup = bs(response.text, "html.parser")
+            if(is_logged_in(soup)):
+                print("LOGGED IN")
+            else:
+                print("NOT LOGGED IN!!!")
             # print("this is the text of the soup for the parser")
             box = soup.find("table", class_="MsoNormalTable")
             

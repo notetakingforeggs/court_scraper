@@ -45,4 +45,4 @@ def login():
         return None
     
 def is_logged_in(soup : bs) -> bool:
-    return soup.find("div", id="login")
+    return not soup.find("div", id="login")
