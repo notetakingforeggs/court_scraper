@@ -4,62 +4,57 @@ from scraper.session import BASE_URL, login, is_logged_in
 
 from bs4 import BeautifulSoup as bs
 import requests
+import traceback
 from scraper.city_set import CITY_SET;
 
+CASE_LIST_BASE_URL = "https://www.courtserve.net/courtlists/viewcourtlistv2.php"
+
+# nb embedded html not coming through in soup, so must navigate to courtlist in new tab for each court.
 def parse_cases(session, court_links): #-> list[CourtCase]:
     """ Get all the course case info from the list of links and put in db via objects."""
-    print("in parser")
-    
+    print("IN parse_cases function")
+    # print(session.cookies) # should have SITELOKPW to signify accss creds
 
     found_cases = []
-    for link in court_links:
+
+    for link in court_links: #for each county court...
         
         try:
-            print("trying to access link and get court case page html")
-            url = BASE_URL + link
-            
-            print(f"this is the url:{url}")
-            
-            #TODO the issue is session is not valid?
-            print("these are the headers")
-            print(session.headers)
-            
-            # get soup for content of daily causes page
+            url = BASE_URL + link                
+            # get soup for content of daily causes page using session cookies from inital log in
             response = session.get(url)
 
-            print("Response Debug Print")
-            # print(response.status_code)
-            # print(response.url)
-            # print(response.headers.get("Content-Type"))
-            # print(response.text)
-        
-
+            # convert html from request into soup
             soup = bs(response.text, "html.parser")
-            if(is_logged_in(soup)):
-                print("LOGGED IN")
-            else:
-                print("NOT LOGGED IN!!!")
-            # print("this is the text of the soup for the parser")
-            box = soup.find("table", class_="MsoNormalTable")
+
+            # find box containing "open list in new tab" link and get path
+            box2 = soup.find("div", id="box2")
+            new_tab_anchor = box2.find("a")
+            new_tab_url = new_tab_anchor["href"] # get url "open list..." link
+            # print(new_tab_url)
+
+            # get new page and make soup
+            case_list_response = session.get(CASE_LIST_BASE_URL + new_tab_url)            
+            soup2 = bs(case_list_response.text, "html.parser")
+            box = soup2.find("table", class_="MsoNormalTable") # maybe just do whole html page here? might avoid the issue of some seemingly not having this box
             
             # are there cases where there is no box?
             if not box:
-                print("couldnt find what im looking for?")
+                print("couldnt find table")
                 continue        
 
             # Extract court name + city
             court_name_elem = box.find("b")
             court_name_string = court_name_elem.get_text(strip=True) if court_name_elem else "Unknown Court"
-            print(court_name_string)
+            # print(court_name_string)
             city= ""
             for c in CITY_SET:
                 if c.lower() in court_name_string.lower():
                     city = c
-                    break
+                    print(city)
+                    
 
-            # print(city)
-
-            # struggling to find good class selectors for desired rows, thinking to check cells and select for containgin AM/PM
+            case_count = 1
             # find valid rows
             rows = box.find_all("tr")
             valid_rows = []
@@ -70,9 +65,14 @@ def parse_cases(session, court_links): #-> list[CourtCase]:
                     if "AM" in text or "PM" in text:
                         valid_rows.append(row)
 
-            spans = row.find_all("span")     
-            texts = [span.text.strip() for span in spans]
-            print(texts)
+            # extract text content from valid rows
+            for row in valid_rows:
+                spans = row.find_all("span")     
+                texts = [span.text.strip() for span in spans]
+
+                print(f"case nø {case_count}: {texts}")
+                case_count += 1 
+
             start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channe_span = texts
 
             case = CourtCase("id", "time", "duration", "claimant", "defendant", "hearing type", "channel")
@@ -90,7 +90,11 @@ def parse_cases(session, court_links): #-> list[CourtCase]:
         except requests.RequestException:
             print(f"Failed to fetch details for {link}")
         except AttributeError:
+            print("AttributeError")
             continue  # Skip if expected elements are missing
+        except :
+            print("some other error")
+            traceback.print_exc
     return found_cases
 
 
