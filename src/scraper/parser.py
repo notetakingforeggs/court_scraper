@@ -33,59 +33,92 @@ def parse_cases(session, court_links): #-> list[CourtCase]:
             new_tab_url = new_tab_anchor["href"] # get url "open list..." link
             # print(new_tab_url)
 
+            embedded_headers = {
+                "Referer": "https://www.courtserve.net/courtlists/viewcourtlistv2.php",
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language": "en-GB,en;q=0.5"
+            }
+
             # get new page and make soup
-            case_list_response = session.get(CASE_LIST_BASE_URL + new_tab_url)            
+            case_list_response = session.get(CASE_LIST_BASE_URL + new_tab_url, headers = embedded_headers)            
             soup2 = bs(case_list_response.text, "html.parser")
-            box = soup2.find("table", class_="MsoNormalTable") # maybe just do whole html page here? might avoid the issue of some seemingly not having this box
+            # some pages have multiple tables of cases.
+            tables = soup2.findAll("table", class_="MsoNormalTable") # maybe just do whole html page here? might avoid the issue of some seemingly not having this box
             
             # are there cases where there is no box?
-            if not box:
-                print("couldnt find table")
+            if not tables:
+                print("couldnt find any table")
                 continue        
 
-            # Extract court name + city
-            court_name_elem = box.find("b")
-            court_name_string = court_name_elem.get_text(strip=True) if court_name_elem else "Unknown Court"
-            # print(court_name_string)
-            city= ""
-            for c in CITY_SET:
-                if c.lower() in court_name_string.lower():
-                    city = c
-                    print(city)
+            # TODO is it simpler to just pass the city name from the prev page?
+            # Extract court name + city 
+
+            #reverse tables to deal with nesting?
+            tables = list(reversed(tables))
+
+            used_tables = set()
+            valid_tables = []
+
+            for table in tables:
+                print("table iteration")
+                if table in used_tables:
+                    continue
+               
+                text = table.get_text()
+                if "AM" in text or "PM" in text:
+                    valid_tables.append(table)
+
+                    # add all parents to used tables
+                    parent = table.find_parent("table")
+                    while parent:
+                        used_tables.add(table)
+                        parent = parent.find_parent("table")
+
+                for table in valid_tables:      
+                    court_name_elem = table.find("b")
                     
+                    court_name_string = court_name_elem.get_text(strip=True) if court_name_elem else "Unknown Court"
+                    # print(court_name_string)
+                    city= ""
+                    for c in CITY_SET:
+                        if c.lower() in court_name_string.lower():
+                            city = c
+                            print(f" extracted {city} from the court name")
+                            
 
-            case_count = 1
-            # find valid rows
-            rows = box.find_all("tr")
-            valid_rows = []
-            for row in rows:
-                span = row.find("span")
-                if span:
-                    text = span.text
-                    if "AM" in text or "PM" in text:
-                        valid_rows.append(row)
+                    case_count = 1
+                    # find valid rows
+                    rows = table.find_all("tr")
+                    valid_rows = []
+                    for row in rows:
+                        span = row.find("span")
+                        if span:
+                            text = span.text
+                            if "AM" in text or "PM" in text:
+                                valid_rows.append(row)
 
-            # extract text content from valid rows
-            for row in valid_rows:
-                spans = row.find_all("span")     
-                texts = [span.text.strip() for span in spans]
+                    # extract text content from valid rows
+                    for row in valid_rows:
+                        spans = row.find_all("span")     
+                        texts = [span.text.strip() for span in spans]
 
-                print(f"case nø {case_count}: {texts}")
-                case_count += 1 
+                        print(f"case nø {case_count}: {texts}")
+                        case_count += 1 
 
-            start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channe_span = texts
+                # start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channe_span = texts
 
-            case = CourtCase("id", "time", "duration", "claimant", "defendant", "hearing type", "channel")
-            found_cases.append(case)
+                # case = CourtCase("id", "time", "duration", "claimant", "defendant", "hearing type", "channel")
+                # found_cases.append(case)
 
 
+                
+            # go through each entry and get various variables
+
+            # add all to an object
+
+            # call a method which adds all object data to db    
             
-        # go through each entry and get various variables
-
-        # add all to an object
-
-        # call a method which adds all object data to db    
-           
 
         except requests.RequestException:
             print(f"Failed to fetch details for {link}")
