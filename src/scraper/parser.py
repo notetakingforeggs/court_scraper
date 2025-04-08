@@ -5,6 +5,7 @@ from scraper.session import BASE_URL, login, is_logged_in
 from bs4 import BeautifulSoup as bs
 import requests
 import traceback
+import re
 from scraper.city_set import CITY_SET;
 
 CASE_LIST_BASE_URL = "https://www.courtserve.net/courtlists/viewcourtlistv2.php"
@@ -44,67 +45,43 @@ def parse_cases(session, court_links): #-> list[CourtCase]:
             case_list_response = session.get(CASE_LIST_BASE_URL + new_tab_url, headers = embedded_headers)            
             soup2 = bs(case_list_response.text, "html.parser")
             # some pages have multiple tables of cases.
-            tables = soup2.findAll("table", class_="MsoNormalTable") # maybe just do whole html page here? might avoid the issue of some seemingly not having this box
-            
-            # are there cases where there is no box?
-            if not tables:
-                print("couldnt find any table")
-                continue        
+            rows = soup2.findAll("tr")
+            rows_with_times = []
 
-            # TODO is it simpler to just pass the city name from the prev page?
-            # Extract court name + city 
+            for row in rows:
+                span = row.find("span")
+                if span:
+                    text = span.text
+                    if "AM" in text or "PM" in text:
+                        rows_with_times.append(row)
 
-            #reverse tables to deal with nesting?
-            tables = list(reversed(tables))
-
-            used_tables = set()
-            valid_tables = []
-
-            for table in tables:
-                print("table iteration")
-                if table in used_tables:
-                    continue
-               
-                text = table.get_text()
-                if "AM" in text or "PM" in text:
-                    valid_tables.append(table)
-
-                    # add all parents to used tables
-                    parent = table.find_parent("table")
-                    while parent:
-                        used_tables.add(table)
-                        parent = parent.find_parent("table")
-
-                for table in valid_tables:      
-                    court_name_elem = table.find("b")
+           
+                # for table in valid_tables:      
+                #     court_name_elem = table.find("b")
                     
-                    court_name_string = court_name_elem.get_text(strip=True) if court_name_elem else "Unknown Court"
-                    # print(court_name_string)
-                    city= ""
-                    for c in CITY_SET:
-                        if c.lower() in court_name_string.lower():
-                            city = c
-                            print(f" extracted {city} from the court name")
+                #     court_name_string = court_name_elem.get_text(strip=True) if court_name_elem else "Unknown Court"
+                #     # print(court_name_string)
+                #     city= ""
+                #     for c in CITY_SET:
+                #         if c.lower() in court_name_string.lower():
+                #             city = c
+                #             print(f" extracted {city} from the court name")
                             
 
-                    case_count = 1
-                    # find valid rows
-                    rows = table.find_all("tr")
-                    valid_rows = []
-                    for row in rows:
-                        span = row.find("span")
-                        if span:
-                            text = span.text
-                            if "AM" in text or "PM" in text:
-                                valid_rows.append(row)
+                    # # find valid rows
+                    # rows = table.find_all("tr")
+                    # valid_rows = []
+                    
 
-                    # extract text content from valid rows
-                    for row in valid_rows:
-                        spans = row.find_all("span")     
-                        texts = [span.text.strip() for span in spans]
+                # extract text content from valid rows
+            case_count = 1
+            
+            for row in rows_with_times:
+                spans = row.find_all("span")     
+                texts = [span.text.strip() for span in spans]
 
-                        print(f"case nø {case_count}: {texts}")
-                        case_count += 1 
+                print(f"case nø {case_count}: {texts}")
+                case_count += 1 
 
                 # start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channe_span = texts
 
@@ -127,7 +104,7 @@ def parse_cases(session, court_links): #-> list[CourtCase]:
             continue  # Skip if expected elements are missing
         except :
             print("some other error")
-            traceback.print_exc
+            traceback.print_exc()
     return found_cases
 
 
