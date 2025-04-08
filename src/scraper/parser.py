@@ -38,36 +38,44 @@ def parse_cases(session, court_links): #-> list[CourtCase]:
             # get new page and make soup
             case_list_response = session.get(CASE_LIST_BASE_URL + new_tab_url)            
             soup2 = bs(case_list_response.text, "html.parser")
-            # some pages have multiple tables of cases.
+            
+            # assuming first bold element contains court name, does it always? TODO 
+            court_name_elem = soup2.find("b")
+            
+            court_name_string = court_name_elem.get_text(strip=True) if court_name_elem else "Unknown Court"
+            city= ""
+            for c in CITY_SET:
+                if c.lower() in court_name_string.lower():
+                    city = c
+                    print(f" extracted {city} from the court name")
+                  
+            # if city == "Aldershot & Farnham":
+                # print(soup2.prettify)
+                    
+
+            
+                    
+            
+            
+            
             rows = soup2.findAll("tr")
             rows_with_times = []
 
             for row in rows:
-                span = row.find("span")
-                if span:
+                if row.find("tr"):
+                    continue
+                spans = row.find_all("span")
+                for span in spans:
+                    # print(repr(span.text))
+                # span = row.find("span")
                     text = span.text
                     if "AM" in text or "PM" in text:
                         rows_with_times.append(row)
 
            
-                # for table in valid_tables:      
-                #     court_name_elem = table.find("b")
-                    
-                #     court_name_string = court_name_elem.get_text(strip=True) if court_name_elem else "Unknown Court"
-                #     # print(court_name_string)
-                #     city= ""
-                #     for c in CITY_SET:
-                #         if c.lower() in court_name_string.lower():
-                #             city = c
-                #             print(f" extracted {city} from the court name")
-                            
+                
 
-                    # # find valid rows
-                    # rows = table.find_all("tr")
-                    # valid_rows = []
-                    
-
-                # extract text content from valid rows
+                
             case_count = 1
             
             for row in rows_with_times:
