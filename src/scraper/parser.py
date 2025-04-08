@@ -34,15 +34,9 @@ def parse_cases(session, court_links): #-> list[CourtCase]:
             new_tab_url = new_tab_anchor["href"] # get url "open list..." link
             # print(new_tab_url)
 
-            embedded_headers = {
-                "Referer": "https://www.courtserve.net/courtlists/viewcourtlistv2.php",
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                "Accept-Language": "en-GB,en;q=0.5"
-            }
-
+       
             # get new page and make soup
-            case_list_response = session.get(CASE_LIST_BASE_URL + new_tab_url, headers = embedded_headers)            
+            case_list_response = session.get(CASE_LIST_BASE_URL + new_tab_url)            
             soup2 = bs(case_list_response.text, "html.parser")
             # some pages have multiple tables of cases.
             rows = soup2.findAll("tr")
