@@ -91,8 +91,13 @@ class CourtScraper:
                 if re.search(r' v |vs|-v-', case_details_span):
                     case_details_list = case_details_span.split(" ")
                     case_code = case_details_list[0]
-                    claimant = case_details_list[1]
-                    defendant = case_details_list[len(case_details_list) - 1]
+
+                    parties_string = (" ").join(case_details_list[1:])
+
+                    match = re.search(r"(.+?)\s*(?:v|vs|-v-)\s*(.+)", parties_string) #TODO figure out regex and capturing groups etc lunch time now.
+                    if match:
+                        claimant = match.group(1).strip()
+                        defendant = match.group(2).strip()
 
                     print(f"""
                             start time: {start_time_span} \n 
@@ -100,8 +105,8 @@ class CourtScraper:
                             claimant: {claimant}\n
                             defendant: {defendant}
                         """)
-        except IndexError as e:
-            print(f"index error: {e}")
+        except (IndexError, ValueError) as e:
+            print(f"index error: {e}, likely an issue with the number of items in the row not being the same as the number of values expected for unpacking")
 
     def get_cleaned_row_texts(self):
         raw = self._extract_case_rows()
