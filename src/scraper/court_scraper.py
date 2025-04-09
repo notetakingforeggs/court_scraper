@@ -84,9 +84,11 @@ class CourtScraper:
     def _clean_row_texts(self, messy_texts):
         try:
             for row in messy_texts:          
-                _, _, start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channe_span = row
-            # case nø 1: ['', '', '10:00 AM', '1 hour', 'AF24P00035 Re A Minor', 'First Hearing and Dispute Resolution Appointment (FHDRA)     (Private Law)', 'In Person']
+                _, _, start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row
                 start_time_span = (" ".join(start_time_span.split()))
+                hearing_channel_span = " ".join(hearing_channel_span.split())
+                hearing_type_span = " ".join(hearing_type_span.split())
+
                 # duration is fine i think
                 if re.search(r' v |vs|-v-', case_details_span):
                     case_details_list = case_details_span.split(" ")
@@ -101,9 +103,12 @@ class CourtScraper:
 
                     print(f"""
                             start time: {start_time_span} \n 
+                            duration: {duration_span}\n
                             case code: {case_code} \n
                             claimant: {claimant}\n
-                            defendant: {defendant}
+                            defendant: {defendant}\n
+                            hearing type: {hearing_type_span}\n
+                            hearing channel: {hearing_channel_span}
                         """)
         except (IndexError, ValueError) as e:
             print(f"index error: {e}, likely an issue with the number of items in the row not being the same as the number of values expected for unpacking")
