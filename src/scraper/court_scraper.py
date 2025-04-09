@@ -1,9 +1,8 @@
 from scraper.models import CourtCase
-from scraper.session import BASE_URL
-
 from bs4 import BeautifulSoup as bs
-from scraper.city_set import CITY_SET;
+from scraper.utils.city_set import CITY_SET
 import re
+
 
 CASE_LIST_BASE_URL = "https://www.courtserve.net/courtlists/viewcourtlistv2.php"
 
@@ -75,13 +74,14 @@ class CourtScraper:
             spans = row.find_all("span")     
             texts = [span.text.strip() for span in spans]
             row_texts_messy.append(texts)
-            print(f"case nø {case_count}: {texts}")
+            # print(f"case nø {case_count}: {texts}")
             case_count += 1 
         return row_texts_messy
        
 
 
-    def _clean_row_texts(self, messy_texts):
+    def _process_rows_to_cases(self, messy_texts):
+        court_cases = []
         try:
             for row in messy_texts:          
                 _, _, start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row
@@ -89,10 +89,9 @@ class CourtScraper:
                 hearing_channel_span = " ".join(hearing_channel_span.split())
                 hearing_type_span = " ".join(hearing_type_span.split())
 
-                # duration is fine i think
-                if re.search(r' v |vs|-v-', case_details_span):
+                if re.search(r' v |vs|-v-', case_details_span): #TODO ignoring situations in which there is no claimant vs defendant for now, do i need that though?
                     case_details_list = case_details_span.split(" ")
-                    case_code = case_details_list[0]
+                    case_id = case_details_list[0]
 
                     parties_string = (" ").join(case_details_list[1:])
 
@@ -100,37 +99,25 @@ class CourtScraper:
                     if match:
                         claimant = match.group(1).strip()
                         defendant = match.group(2).strip()
-
-                    print(f"""
-                            start time: {start_time_span} \n 
-                            duration: {duration_span}\n
-                            case code: {case_code} \n
-                            claimant: {claimant}\n
-                            defendant: {defendant}\n
-                            hearing type: {hearing_type_span}\n
-                            hearing channel: {hearing_channel_span}
-                        """)
+                        
+                    court_case = CourtCase(
+                        case_id,
+                        start_time_span,
+                        duration_span,
+                        claimant,
+                        defendant,
+                        hearing_type_span,
+                        hearing_channel_span,
+                    )
+                    court_cases.append(court_case)
+                    
+            return court_cases
         except (IndexError, ValueError) as e:
             print(f"index error: {e}, likely an issue with the number of items in the row not being the same as the number of values expected for unpacking")
 
-    def get_cleaned_row_texts(self):
-        raw = self._extract_case_rows()
-        clean = self._clean_row_texts(raw)
-        # return clean
-        pass
-
-    def to_court_case_objects(self):
-        pass
-
-
-
-                # case = CourtCase("id", "time", "duration", "claimant", "defendant", "hearing type", "channel")
-                # found_cases.append(case)
-
-
-                
-            # go through each entry and get various variables
-
-            # add all to an object
+    def rows_to_objects(self):
+        raw_row_texts = self._extract_case_rows()
+        court_cases = self._process_rows_to_cases(raw_row_texts)
+        return court_cases
 
             # call a method which adds all object data to db    

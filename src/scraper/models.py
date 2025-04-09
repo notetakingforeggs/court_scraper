@@ -1,6 +1,7 @@
 # For data models only
 
 from dataclasses import dataclass,field
+from scraper.utils.time_converter import convert_to_unix_timestamp
 
 @dataclass
 class CourtCase:
@@ -11,10 +12,8 @@ class CourtCase:
     defendant: str
     hearing_type: str
     hearing_channel: str
-    start_time_epoch: int  = field(init=False)
+    start_time_epoch: int  = field(init=False)  
         
     def __post_init__(self):
-        self
-    # implement string time to epoch conversion here.
-    # maybe also can call a court case normaliser util or smth to get specific court case from string
+        self.start_time_epoch = convert_to_unix_timestamp(self.start_time_string)
         
