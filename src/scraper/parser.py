@@ -47,35 +47,21 @@ def parse_cases(session, court_links): #-> list[CourtCase]:
             for c in CITY_SET:
                 if c.lower() in court_name_string.lower():
                     city = c
-                    print(f" extracted {city} from the court name")
-                  
-            # if city == "Aldershot & Farnham":
-                # print(soup2.prettify)
-                    
-
-            
-                    
-            
-            
-            
+                    print(f" extracted {city} from the court name")             
+          
             rows = soup2.findAll("tr")
             rows_with_times = []
 
             for row in rows:
-                if row.find("tr"):
+                if row.find("tr"): # ignore rows that contain other rows, as only the most deeply nested are desired to avoid duplication
                     continue
-                spans = row.find_all("span")
+                spans = row.find_all("span") # check for AM or PM in the span childs of the row and add to rows with times if found, all desired data has a time associated with it.
                 for span in spans:
-                    # print(repr(span.text))
-                # span = row.find("span")
                     text = span.text
                     if "AM" in text or "PM" in text:
                         rows_with_times.append(row)
 
            
-                
-
-                
             case_count = 1
             
             for row in rows_with_times:
