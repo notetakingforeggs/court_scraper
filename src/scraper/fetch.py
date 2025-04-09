@@ -16,7 +16,7 @@ def get_court_links() -> list[str] :
         response = requests.get(url)
 
         soup = bs(response.text, "html.parser")
-
+        
         # get the table with all the links in
         table = soup.find_all("table")[0]
 
@@ -26,23 +26,10 @@ def get_court_links() -> list[str] :
         # find all anchor elements that have "daily" in their text field.
         link_tags = table.find_all("a", string = lambda text: text and "daily" in text.lower())
 
-        # This just to get city names to put in set - do again if list changes
-        # locations = table.find_all("strong")
-        # for loc in locations:
-        #     print(f'"{loc.get_text()}",')
-
-
-
         links = []
         for link in link_tags:
             links.append(link.get("href"))
         
-
-
-
-
-
-
         return links
 
     except requests.RequestException as e:

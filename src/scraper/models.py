@@ -1,3 +1,5 @@
+# For data models only
+
 from dataclasses import dataclass,field
 
 @dataclass

@@ -2,9 +2,6 @@ from scraper.models import CourtCase
 from scraper.session import BASE_URL
 
 from bs4 import BeautifulSoup as bs
-# import requests
-# import traceback
-# import re
 from scraper.city_set import CITY_SET;
 
 CASE_LIST_BASE_URL = "https://www.courtserve.net/courtlists/viewcourtlistv2.php"
@@ -79,16 +76,37 @@ class CourtScraper:
             row_texts_messy.append(texts)
             print(f"case nø {case_count}: {texts}")
             case_count += 1 
-        
         return row_texts_messy
+       
+
 
     def _clean_row_texts(self, messy_texts):
-        print(messy_texts)
-            
+        try:
+            for row in messy_texts:          
+                _, _, start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channe_span = row
+            # case nø 1: ['', '', '10:00 AM', '1 hour', 'AF24P00035 Re A Minor', 'First Hearing and Dispute Resolution Appointment (FHDRA)     (Private Law)', 'In Person']
+                print(" ".join(start_time_span.split()))
+        except IndexError as e:
+            print(f"index error: {e}")
+
     def get_cleaned_row_texts(self):
         raw = self._extract_case_rows()
         clean = self._clean_row_texts(raw)
-        return clean
+        # return clean
+        pass
 
     def to_court_case_objects(self):
         pass
+
+
+
+                # case = CourtCase("id", "time", "duration", "claimant", "defendant", "hearing type", "channel")
+                # found_cases.append(case)
+
+
+                
+            # go through each entry and get various variables
+
+            # add all to an object
+
+            # call a method which adds all object data to db    
