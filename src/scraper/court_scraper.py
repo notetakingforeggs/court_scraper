@@ -3,6 +3,7 @@ from scraper.session import BASE_URL
 
 from bs4 import BeautifulSoup as bs
 from scraper.city_set import CITY_SET;
+import re
 
 CASE_LIST_BASE_URL = "https://www.courtserve.net/courtlists/viewcourtlistv2.php"
 
@@ -85,7 +86,20 @@ class CourtScraper:
             for row in messy_texts:          
                 _, _, start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channe_span = row
             # case nø 1: ['', '', '10:00 AM', '1 hour', 'AF24P00035 Re A Minor', 'First Hearing and Dispute Resolution Appointment (FHDRA)     (Private Law)', 'In Person']
-                print(" ".join(start_time_span.split()))
+                start_time_span = (" ".join(start_time_span.split()))
+                # duration is fine i think
+                if re.search(r' v |vs|-v-', case_details_span):
+                    case_details_list = case_details_span.split(" ")
+                    case_code = case_details_list[0]
+                    claimant = case_details_list[1]
+                    defendant = case_details_list[len(case_details_list) - 1]
+
+                    print(f"""
+                            start time: {start_time_span} \n 
+                            case code: {case_code} \n
+                            claimant: {claimant}\n
+                            defendant: {defendant}
+                        """)
         except IndexError as e:
             print(f"index error: {e}")
 
