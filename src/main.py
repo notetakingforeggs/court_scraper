@@ -1,4 +1,41 @@
-from interface import cli
+import sys
+sys.path.append('../src/')  
+from scraper.session import login, BASE_URL
+from scraper.fetch import get_court_links
+# from scraper.parser import parse_cases
+from scraper.court_scraper import CourtScraper
+
+from db.db_methods import get_connection, get_court_id_by_city, insert_court_case
+
+
 
 if __name__ == "__main__":
-    cli.user_interface()
+
+    # getting court links doesnt need session as no log in... but it does want you to log in to view the deetts..
+    links = get_court_links()
+    # print(links)
+
+    # logging in
+    session = login()      
+
+    # get db connection
+    get_connection()
+
+    # iterating through each court link TODO currently selecting for 'daily' which i think is sub optimal
+    for link in links:
+        courtScraoer = CourtScraper(session, BASE_URL + link)
+        courtScraoer.load_case_page()
+        courtScraoer.get_case_list_soup()
+        courtScraoer.extract_city_and_court_name()
+        court_cases = courtScraoer.rows_to_objects()
+        if not court_cases:
+            continue
+        for case in court_cases: # iterate through scraped court cases and add to db
+            court_id = get_court_id_by_city(case.city)
+            if not court_id:
+                continue 
+            insert_court_case(case, court_id)
+
+
+
+
