@@ -19,43 +19,51 @@ def get_connection():
 
 def get_court_id_by_city(city):
     conn = get_connection()
-    with conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                SELECT id FROM court WHERE name = %s
-                """,
-                 (city,)) #trailing comma is important as execute needs a tuple as arg, and that is how to designate
-            row = cur.fetchone()
-            return row[0] if row else None
+
+    try:
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    SELECT id FROM court WHERE city = %s
+                    """,
+                    (city,)) #trailing comma is important as execute needs a tuple as arg, and that is how to designate
+                row = cur.fetchone()
+                
+                return row[0] if row else None
+    finally:
+       conn.close()
         
 def insert_court_case(court_case:CourtCase, court_id):
     conn = get_connection()
-    with conn:
-        with conn.cursor() as cur:
-            cur.execute(
-                '''
-                    INSERT INTO court_case(
-                    start_time_epoch,
-                    duration,
-                    case_id,
-                    claimant,
-                    defendant,
-                    hearing_type,
-                    hearing_channel,
-                    court_id
+    try:
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    '''
+                        INSERT INTO court_case(
+                        start_time_epoch,
+                        duration,
+                        case_id,
+                        claimant,
+                        defendant,
+                        hearing_type,
+                        hearing_channel,
+                        court_id
+                        )
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                        RETURNING id
+                    ''',
+                    (
+                        court_case.start_time_epoch,
+                        court_case.duration,
+                        court_case.case_id,
+                        court_case.claimant,
+                        court_case.defendant,
+                        court_case.hearing_type,
+                        court_case.hearing_channel,
+                        court_id
                     )
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-                    RETURNING id
-                ''',
-                (
-                    court_case.start_time_epoch,
-                    court_case.duration,
-                    court_case.case_id,
-                    court_case.claimant,
-                    court_case.defendant,
-                    court_case.hearing_type,
-                    court_case.hearing_channel,
-                    court_id
                 )
-            )
+    finally:
+        conn.close()
     # return cur.fetchone()[0] # is it useful to return the case id? maybe for testing? leave in for now.
