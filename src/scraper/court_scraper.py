@@ -1,3 +1,5 @@
+# TODO duration needs cleaned but tbh im not really going to use that so can do it later.
+
 from scraper.models import CourtCase
 from bs4 import BeautifulSoup as bs
 from scraper.utils.city_set import CITY_SET
