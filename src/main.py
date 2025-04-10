@@ -2,18 +2,14 @@ import sys
 sys.path.append('../src/')  
 from scraper.session import login, BASE_URL
 from scraper.fetch import get_court_links
-# from scraper.parser import parse_cases
 from scraper.court_scraper import CourtScraper
-
 from db.db_methods import get_connection, get_court_id_by_city, insert_court_case
-
 
 
 if __name__ == "__main__":
 
-    # getting court links doesnt need session as no log in... but it does want you to log in to view the deetts..
+    # getting links to different courts
     links = get_court_links()
-    # print(links)
 
     # logging in
     session = login()      
