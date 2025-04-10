@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 from db.models import CourtCase
 
-load_dotenv(dotenv_path="../../.env.dev")
+load_dotenv(dotenv_path="../.env.dev", override=True) # override means that it removes any lingering .env vars
 
 def get_connection():
     return psycopg2.connect(
@@ -18,8 +18,7 @@ def get_connection():
     
 
 def get_court_id_by_city(city):
-    conn = get_connection()
-
+    conn = get_connection()  
     try:
         with conn:
             with conn.cursor() as cur:
@@ -27,9 +26,10 @@ def get_court_id_by_city(city):
                     SELECT id FROM court WHERE city = %s
                     """,
                     (city,)) #trailing comma is important as execute needs a tuple as arg, and that is how to designate
-                row = cur.fetchone()
-                
+                row = (cur.fetchone())
                 return row[0] if row else None
+                
+
     finally:
        conn.close()
         
@@ -66,4 +66,3 @@ def insert_court_case(court_case:CourtCase, court_id):
                 )
     finally:
         conn.close()
-    # return cur.fetchone()[0] # is it useful to return the case id? maybe for testing? leave in for now.
