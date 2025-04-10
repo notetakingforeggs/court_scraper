@@ -35,7 +35,7 @@ def login():
     """Logs into the court website and returns an authenticated session."""
     session = requests.session()
     session.headers.update(HEADERS)
-    print(f"username: {USERNAME}, password: {PASSWORD}")
+    # print(f"username: {USERNAME}, password: {PASSWORD}")
     
     try:
         login_response = session.post(url, data=login_payload, allow_redirects=False)

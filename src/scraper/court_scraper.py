@@ -2,7 +2,7 @@
 
 from db.models import CourtCase
 from bs4 import BeautifulSoup as bs
-from scraper.utils.city_set import CITY_SET
+from utils.city_set import CITY_SET
 import re
 
 
@@ -48,7 +48,7 @@ class CourtScraper:
         for c in CITY_SET:
             if c.lower() in court_name_string.lower():
                 city = c
-                print(f" extracted {city} from the court name")  
+                # print(f" extracted {city} from the court name")  
         self.city = city
 
         
@@ -116,7 +116,8 @@ class CourtScraper:
                     
             return court_cases
         except (IndexError, ValueError) as e:
-            print(f"index error: {e}, likely an issue with the number of items in the row not being the same as the number of values expected for unpacking")
+            # print(f"index error: {e}, likely an issue with the number of items in the row not being the same as the number of values expected for unpacking")
+            pass
 
     def rows_to_objects(self):
         raw_row_texts = self._extract_case_rows()

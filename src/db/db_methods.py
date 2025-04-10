@@ -2,7 +2,7 @@ import psycopg2
 import os
 from dotenv import load_dotenv
 
-from models import CourtCase
+from db.models import CourtCase
 
 load_dotenv(dotenv_path="../../.env.dev")
 
@@ -12,8 +12,10 @@ def get_connection():
         user = os.getenv("DB_USER"),
         password = os.getenv("DB_PASS"),
         host = os.getenv("DB_HOST"),
-        port = os.getent("DB_HOST)")
+        port = os.getenv("DB_PORT")
     )
+
+    
 
 def get_court_id_by_city(city):
     conn = get_connection()
@@ -22,14 +24,14 @@ def get_court_id_by_city(city):
             cur.execute("""
                 SELECT id FROM court WHERE name = %s
                 """,
-                 (city))
+                 (city,)) #trailing comma is important as execute needs a tuple as arg, and that is how to designate
             row = cur.fetchone()
             return row[0] if row else None
         
 def insert_court_case(court_case:CourtCase, court_id):
     conn = get_connection()
     with conn:
-        with conn.cursor_factory as cur:
+        with conn.cursor() as cur:
             cur.execute(
                 '''
                     INSERT INTO court_case(
@@ -56,4 +58,4 @@ def insert_court_case(court_case:CourtCase, court_id):
                     court_id
                 )
             )
-    return cur.fetchone()[0] # is it useful to return the case id? maybe for testing? leave in for now.
+    # return cur.fetchone()[0] # is it useful to return the case id? maybe for testing? leave in for now.
