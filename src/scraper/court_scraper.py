@@ -1,6 +1,6 @@
 # TODO duration needs cleaned but tbh im not really going to use that so can do it later.
 
-from scraper.models import CourtCase
+from db.models import CourtCase
 from bs4 import BeautifulSoup as bs
 from scraper.utils.city_set import CITY_SET
 import re
@@ -110,6 +110,7 @@ class CourtScraper:
                         defendant,
                         hearing_type_span,
                         hearing_channel_span,
+                        self.city
                     )
                     court_cases.append(court_case)
                     
