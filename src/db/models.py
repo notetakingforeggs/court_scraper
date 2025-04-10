@@ -1,7 +1,7 @@
 # For data models only
 
 from dataclasses import dataclass,field
-from scraper.utils.time_converter import convert_to_unix_timestamp
+from utils.time_converter import convert_to_unix_timestamp
 
 @dataclass
 class CourtCase:
@@ -12,6 +12,7 @@ class CourtCase:
     defendant: str
     hearing_type: str
     hearing_channel: str
+    city: str 
     start_time_epoch: int  = field(init=False)  
         
     def __post_init__(self):
