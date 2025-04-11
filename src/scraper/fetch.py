@@ -24,10 +24,13 @@ def get_court_links() -> list[str] :
             print("No tables found.")
             return []
         # find all anchor elements that have "daily" in their text field.
-        link_tags = table.find_all("a", string = lambda text: text and "daily" in text.lower())
+        # link_tags = table.find_all("a", string = lambda text: text and "daily" in text.lower())
+        link_tags = table.find_all("a")
 
         links = []
         for link in link_tags:
+            if not link.has_attr("href"):
+                continue
             links.append(link.get("href"))
         
         return links
