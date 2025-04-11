@@ -1,7 +1,7 @@
 import sys
 sys.path.append('../src/')  
 from scraper.session import login, BASE_URL
-from scraper.fetch import get_court_links
+from scraper.fetch import get_court_links_and_dates
 from scraper.court_scraper import CourtScraper
 from db.db_methods import get_connection, get_court_id_by_city, insert_court_case
 
@@ -9,7 +9,7 @@ from db.db_methods import get_connection, get_court_id_by_city, insert_court_cas
 if __name__ == "__main__":
 
     # getting links to different courts
-    links = get_court_links()
+    links = get_court_links_and_dates()
 
     # logging in
     session = login()      

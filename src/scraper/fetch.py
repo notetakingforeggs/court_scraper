@@ -7,7 +7,7 @@ import re
 # BASE_URL = "https://www.courtserve.net"
 
 
-def get_court_links() -> list[str] :
+def get_court_links_and_dates() -> list[str] :
     """Retrieves all court links from the main court page."""
     print("getting court links")
     try:
@@ -38,13 +38,10 @@ def get_court_links() -> list[str] :
             for td in td_tags:
                 match =  re.search(pattern, td.get_text(strip=True))
                 if match:
-                    print("matches")
                     date = td.text
                     link_tag = row.find("a")   
                     print(link_tag)
                     break
-                else:
-                    print("no match")
             if date and link_tag and link_tag.get("href"):
                 links_and_dates.append((link_tag.get("href"), date))
         
