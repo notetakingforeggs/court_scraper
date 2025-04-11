@@ -2,6 +2,7 @@
 import requests
 from bs4 import BeautifulSoup as bs
 from scraper.session import BASE_URL
+import re
 
 # BASE_URL = "https://www.courtserve.net"
 
@@ -23,17 +24,31 @@ def get_court_links() -> list[str] :
         if not table:
             print("No tables found.")
             return []
-        # find all anchor elements that have "daily" in their text field.
-        # link_tags = table.find_all("a", string = lambda text: text and "daily" in text.lower())
-        link_tags = table.find_all("a")
-
-        links = []
-        for link in link_tags:
-            if not link.has_attr("href"):
-                continue
-            links.append(link.get("href"))
         
-        return links
+        rows = table.find_all("tr")
+        pattern = r'\b(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/\d{2}\b'
+        if not rows:
+            print("no rows")
+        links_and_dates = []
+
+        for row in rows:
+            date = ""
+            link_tag = None
+            td_tags = row.find_all("td")
+            for td in td_tags:
+                match =  re.search(pattern, td.get_text(strip=True))
+                if match:
+                    print("matches")
+                    date = td.text
+                    link_tag = row.find("a")   
+                    print(link_tag)
+                    break
+                else:
+                    print("no match")
+            if date and link_tag and link_tag.get("href"):
+                links_and_dates.append((link_tag.get("href"), date))
+        
+        return links_and_dates
 
     except requests.RequestException as e:
         print(f"Failed to retrieve court links: {e}")
