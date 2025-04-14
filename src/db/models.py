@@ -7,6 +7,7 @@ from utils.time_converter import convert_to_unix_timestamp
 class CourtCase:
     case_id: str
     start_time_string: str
+    date: str
     duration: str
     claimant: str
     defendant: str
@@ -16,5 +17,5 @@ class CourtCase:
     start_time_epoch: int  = field(init=False)  
         
     def __post_init__(self):
-        self.start_time_epoch = convert_to_unix_timestamp(self.start_time_string)
+        self.start_time_epoch = convert_to_unix_timestamp(self.start_time_string, self.date)
         

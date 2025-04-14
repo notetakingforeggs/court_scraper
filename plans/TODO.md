@@ -9,6 +9,8 @@
 - something about city/location
 - tests
 - type hints/return values and documentation comments
+- Deal with collisions in db?
+
 
 
 

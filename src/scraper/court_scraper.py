@@ -82,7 +82,7 @@ class CourtScraper:
        
 
 
-    def _process_rows_to_cases(self, messy_texts):
+    def _process_rows_to_cases(self, messy_texts, date):
         court_cases = []
         try:
             for row in messy_texts:          
@@ -105,6 +105,7 @@ class CourtScraper:
                     court_case = CourtCase(
                         case_id,
                         start_time_span,
+                        date,
                         duration_span,
                         claimant,
                         defendant,
@@ -119,9 +120,10 @@ class CourtScraper:
             # print(f"index error: {e}, likely an issue with the number of items in the row not being the same as the number of values expected for unpacking")
             pass
 
-    def rows_to_objects(self):
+    def rows_to_objects(self, date):
+        print("error past ere?")
         raw_row_texts = self._extract_case_rows()
-        court_cases = self._process_rows_to_cases(raw_row_texts)
+        court_cases = self._process_rows_to_cases(raw_row_texts, date)
         return court_cases
 
             # call a method which adds all object data to db    
