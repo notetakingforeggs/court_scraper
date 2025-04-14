@@ -47,10 +47,11 @@ class CourtScraper:
         
         court_name_string = court_name_elem.get_text(strip=True) if court_name_elem else "Unknown Court"
         city= ""
+        
         for c in CITY_SET:
-            if c.lower() in court_name_string.lower():
+            city_pattern = rf"\b{re.escape(c.lower())}\b"
+            if re.search(city_pattern, court_name_string.lower()):
                 city = c
-                # print(f" extracted {city} from the court name")  
         self.city = city
 
         
