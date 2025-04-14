@@ -4,8 +4,6 @@ from bs4 import BeautifulSoup as bs
 from scraper.session import BASE_URL
 import re
 
-# BASE_URL = "https://www.courtserve.net"
-
 
 def get_court_links_and_dates() -> list[str] :
     """Retrieves all court links from the main court page."""
@@ -13,7 +11,7 @@ def get_court_links_and_dates() -> list[str] :
     try:
         url = BASE_URL + "/courtlists/current/county/indexv2county.php"  
             
-        # response = session.get(url)
+        # response = session.get(url) Don't need to use session here as the court list is not behind login
         response = requests.get(url)
 
         soup = bs(response.text, "html.parser")
@@ -40,7 +38,6 @@ def get_court_links_and_dates() -> list[str] :
                 if match:
                     date = td.text
                     link_tag = row.find("a")   
-                    print(link_tag)
                     break
             if date and link_tag and link_tag.get("href"):
                 links_and_dates.append((link_tag.get("href"), date))

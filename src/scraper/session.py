@@ -10,7 +10,6 @@ USERNAME = os.getenv("COURT_USERNAME")
 PASSWORD = os.getenv("COURT_PASSWORD")
 
 BASE_URL = "https://www.courtserve.net"
-# LOGIN_ROUTE = "/confirmation-pages/registration-confirm-request.php"
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
     "Referer": "https://www.courtserve.net/",
@@ -57,7 +56,7 @@ def login():
             return None
         else:
             print("probs logged in")
-            return session #, response   
+            return session 
     except requests.RequestException as e:
         print(f"Request failed: {e}")
         return None

@@ -20,6 +20,7 @@ class CourtScraper:
         self.case_soup = None
 
     def load_case_page(self):
+        """ Gets new tab urls from each court listing. """
         #load page of cases from url
         # get soup for content of daily causes page using session cookies from inital log in
         response = self.session.get(self.court_url)
@@ -34,12 +35,13 @@ class CourtScraper:
         self.new_tab_url = new_tab_url
 
     def get_case_list_soup(self):
+        """Gets case list soup from case list page."""
         case_list_response = self.session.get(CASE_LIST_BASE_URL + self.new_tab_url)            
         self.case_soup = bs(case_list_response.text, "html.parser")
         
 
     def extract_city_and_court_name(self):
-            
+        """Extracts city and court name from the soup and stores inside the court_scraper object."""
         # assuming first bold element contains court name, does it always? TODO 
         court_name_elem = self.case_soup.find("b")
         
@@ -54,7 +56,7 @@ class CourtScraper:
         
 
     def _extract_case_rows(self):
-
+        '''Extract all text from table data tahs in rows.'''
 
         # select only rows with times in
         rows = self.case_soup.findAll("tr") 
@@ -76,13 +78,13 @@ class CourtScraper:
             spans = row.find_all("span")     
             texts = [span.text.strip() for span in spans]
             row_texts_messy.append(texts)
-            # print(f"case nø {case_count}: {texts}")
             case_count += 1 
         return row_texts_messy
        
 
 
     def _process_rows_to_cases(self, messy_texts, date):
+        """Converts each row into a court case object."""
         court_cases = []
         try:
             for row in messy_texts:          
@@ -97,7 +99,7 @@ class CourtScraper:
 
                     parties_string = (" ").join(case_details_list[1:])
 
-                    match = re.search(r"(.+?)\s*(?:v|vs|-v-)\s*(.+)", parties_string) #TODO figure out regex and capturing groups etc lunch time now.
+                    match = re.search(r"(.+?)\s*(?:v|vs|-v-)\s*(.+)", parties_string) 
                     if match:
                         claimant = match.group(1).strip()
                         defendant = match.group(2).strip()
@@ -121,8 +123,7 @@ class CourtScraper:
             pass
 
     def rows_to_objects(self, date):
+        
         raw_row_texts = self._extract_case_rows()
         court_cases = self._process_rows_to_cases(raw_row_texts, date)
         return court_cases
-
-            # call a method which adds all object data to db    
