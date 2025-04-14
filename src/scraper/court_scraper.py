@@ -101,7 +101,6 @@ class CourtScraper:
                     if match:
                         claimant = match.group(1).strip()
                         defendant = match.group(2).strip()
-                        
                     court_case = CourtCase(
                         case_id,
                         start_time_span,
@@ -113,6 +112,7 @@ class CourtScraper:
                         hearing_channel_span,
                         self.city
                     )
+                    print(court_case)
                     court_cases.append(court_case)
                     
             return court_cases
@@ -121,7 +121,6 @@ class CourtScraper:
             pass
 
     def rows_to_objects(self, date):
-        print("error past ere?")
         raw_row_texts = self._extract_case_rows()
         court_cases = self._process_rows_to_cases(raw_row_texts, date)
         return court_cases
