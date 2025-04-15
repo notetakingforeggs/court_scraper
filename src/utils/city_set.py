@@ -3,7 +3,7 @@ CITY_SET = {
 "Aldershot & Farnham",
 "Barnet",
 "Barnsley",
-"Barrow in Furness",
+"Barrow",
 "Basildon",
 "Basingstoke",
 "Bath",
