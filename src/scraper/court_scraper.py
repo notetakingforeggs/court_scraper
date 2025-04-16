@@ -55,11 +55,11 @@ class CourtScraper:
 
     def extract_city_and_court_name(self):
         """Extracts city and court name from the soup and stores inside the court_scraper object."""
-        # assuming first bold element contains court name, does it always? TODO 
         court_name_elem = self.case_soup.find("b")
         
         court_name_string = court_name_elem.get_text(strip=True) if court_name_elem else "Unknown Court"
 
+        print(court_name_string)
         for c in CITY_SET:
             city_pattern = rf"\b{re.escape(c.lower())}\b"
             if re.search(city_pattern, court_name_string.lower()):

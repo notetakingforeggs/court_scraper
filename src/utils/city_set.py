@@ -33,7 +33,7 @@ CITY_SET = {
 "Chelmsford",
 "Chester",
 "Chesterfield",
-"Clerkenwell & Shoreditch",
+"Clerkenwell",
 "Colchester", 
 "Court of Protection", 
 "Coventry",
