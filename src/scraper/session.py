@@ -40,13 +40,12 @@ def login():
         login_response = session.post(url, data=login_payload, allow_redirects=False)
         
         # 200 response is failed login, returning login page, 302 is redirection, which is what we want to get.
-        print(f"Status Code: {login_response.status_code}")
-        print(f"Final URL: {login_response.url}")
-        print(f"session cookies: {session.cookies}")
+
         if login_response.status_code == 302:
             redirect_url = login_response.headers.get("Location", "/")
             home_response = session.get("https://courtserve.net" + redirect_url)
         else:
+            print("Did not recieve a redirect, already logged in?") # TODO this needs clarification
             home_response = session.get("https://courtserve.net/")
         
         soup = bs(home_response.text, "html.parser")

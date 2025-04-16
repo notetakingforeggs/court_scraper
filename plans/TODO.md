@@ -28,3 +28,9 @@
 - Newport IOW will need extra logic
 
 - Need better regex for cases like this: M00KH164 Matthew James (Joint LPA Receivers) -v- Persons Unknown, the v messing it up?
+
+- Clerkenwell and shoreditch not showing up
+
+- stratford needs to be included separately to clerkenwell and shoreditch
+
+- Central london is a different format

@@ -59,18 +59,12 @@ class CourtScraper:
         court_name_elem = self.case_soup.find("b")
         
         court_name_string = court_name_elem.get_text(strip=True) if court_name_elem else "Unknown Court"
-        city= ""
-        print(court_name_string)
 
         for c in CITY_SET:
             city_pattern = rf"\b{re.escape(c.lower())}\b"
             if re.search(city_pattern, court_name_string.lower()):
                 self.city = c    
-            if self.city == "Barrow":
-                print("barrrooooooooow")
-        print(self.city)
-
-        
+         
 
     def _extract_case_rows(self):
         '''Extract all text from table data tahs in rows.'''
