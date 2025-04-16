@@ -37,6 +37,8 @@ def insert_court_case(court_case:CourtCase, court_id):
     conn = get_connection()
     try:
         with conn:
+            print(f"city before db add: {court_case.city}")
+            print("hihih")
             with conn.cursor() as cur:
                 cur.execute(
                     '''
@@ -66,7 +68,7 @@ def insert_court_case(court_case:CourtCase, court_id):
                 )
         
     except psycopg2.IntegrityError as e:
-        print(f"case already exists?: {court_case}\n {e.with_traceback}")
+        # print(f"case already exists?: {court_case}\n {e.with_traceback}")
         pass
 
     finally:

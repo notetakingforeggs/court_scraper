@@ -64,7 +64,9 @@ class CourtScraper:
             city_pattern = rf"\b{re.escape(c.lower())}\b"
             if re.search(city_pattern, court_name_string.lower()):
                 self.city = c    
-         
+        print(f"city in extract city:{self.city}")
+
+        return self.city # returning city name for easier debugging in main/nb
 
     def _extract_case_rows(self):
         '''Extract all text from table data tahs in rows.'''
