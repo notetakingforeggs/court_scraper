@@ -3,15 +3,15 @@ CITY_SET = {
 "Aldershot & Farnham",
 "Barnet",
 "Barnsley",
-"Barnstaple", #issue
-"Barrow", #issue
-"Basildon", #issue
+"Barnstaple", 
+"Barrow", 
+"Basildon", 
 "Basingstoke",
 "Bath",
-"Bedford", #issue
+"Bedford",
 "Birkenhead",
 "Birmingham",
-"Blackburn", #issue
+"Blackburn", 
 "Blackpool",
 "Blackwood",
 "Boston",
@@ -22,53 +22,53 @@ CITY_SET = {
 "Bristol",
 "Bromley",
 "Burnley",
-"Bury St Edmunds", #issue
-"Caernarfon", #issue
-"Cambridge", #issue
+"Bury St Edmunds", 
+"Caernarfon", 
+"Cambridge", 
 "Canterbury", 
-"Cardiff",#issue
-"Carlisle", #issue
-"Central Family", #issue
-"Central London", #issue
-"Chelmsford",#issue
-"Chester",#issue
-"Chesterfield",#issue
-"Clerkenwell & Shoreditch",#issue
-"Colchester", #issue
-"Court of Protection", #issue
+"Cardiff",
+"Carlisle", 
+"Central Family", 
+"Central London", 
+"Chelmsford",
+"Chester",
+"Chesterfield",
+"Clerkenwell & Shoreditch",
+"Colchester", 
+"Court of Protection", 
 "Coventry",
-"Crewe",#issue
+"Crewe",
 "Croydon",
 "Darlington",
-"Dartford",#issue
+"Dartford",
 "Derby",
-"Doncaster", #issue
-"Dudley", #issue
+"Doncaster", 
+"Dudley", 
 "Durham",
 "East London",
 "Edmonton",
 "Exeter",
 "Gateshead",
 "Gloucester",
-"Great Grimsby", #issue
-"Guildford", #issue
-"Harrogate", #issue
-"Hastings", #issue
+"Great Grimsby", 
+"Guildford", 
+"Harrogate", 
+"Hastings", 
 "Haverfordwest",
-"Hertford", #issue
-"High Wycombe", #issue
-"Horsham", #issue
-"Huddersfield", #issue
-"Ipswich", #issue
-"Kingston upon Hull", #issue
+"Hertford", 
+"High Wycombe", 
+"Horsham", 
+"Huddersfield", 
+"Ipswich", 
+"Kingston upon Hull", 
 "Kingston upon Thames",
-"Lancaster", #issue
-"Leeds",#issue
-"Leicester",#issue
+"Lancaster", 
+"Leeds",
+"Leicester",
 "Lincoln",
 "Liverpool",
 "Llanelli",
-"Luton", #issue  TODO why are these not being scraped... maybe try and figure and see if fixes.
+"Luton", 
 "Maidstone",
 "Manchester",
 "Mansfield",
@@ -79,7 +79,7 @@ CITY_SET = {
 "Mold",
 "Newcastle Upon Tyne",
 "Newport",
-"Newport (IoW)",
+"Newport (IoW)", # issues in here
 "North Shields",
 "Northampton",
 "Norwich",
