@@ -110,6 +110,7 @@ CITY_SET = {
 "Sunderland",
 "Swansea",
 "Swindon",
+"Stratford",
 "Taunton",
 "Telford",
 "Thanet",
