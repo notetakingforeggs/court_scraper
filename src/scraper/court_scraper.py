@@ -52,7 +52,8 @@ class CourtScraper:
             city_pattern = rf"\b{re.escape(c.lower())}\b"
             if re.search(city_pattern, court_name_string.lower()):
                 city = c
-        self.city = city
+            self.city = city
+            print(city)
 
         
 
@@ -115,7 +116,6 @@ class CourtScraper:
                         hearing_channel_span,
                         self.city
                     )
-                    print(court_case)
                     court_cases.append(court_case)
                     
             return court_cases
