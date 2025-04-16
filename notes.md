@@ -5,3 +5,7 @@
 - could use sqlacodegen to autogenerate python models from a db
 
 - signin form different from long form??? why....
+
+__Don't let anything fail silently, ever.... what a pain__
+
+- GPT is not good enough at doing structured data yet, don't use it, or if used it will need a heavy vetting/editing.

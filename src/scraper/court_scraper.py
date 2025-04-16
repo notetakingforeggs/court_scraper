@@ -21,7 +21,6 @@ class CourtScraper:
 
     def load_case_page(self):
         """ Gets new tab urls from each court listing. """
-        print("hihihi")
         #load page of cases from url
         # get soup for content of daily causes page using session cookies from inital log in
         response = self.session.get(self.court_url)
@@ -61,13 +60,15 @@ class CourtScraper:
         
         court_name_string = court_name_elem.get_text(strip=True) if court_name_elem else "Unknown Court"
         city= ""
-        # print(court_name_string)
+        print(court_name_string)
 
         for c in CITY_SET:
             city_pattern = rf"\b{re.escape(c.lower())}\b"
             if re.search(city_pattern, court_name_string.lower()):
-                city = c
-            self.city = city
+                self.city = c    
+            if self.city == "Barrow":
+                print("barrrooooooooow")
+        print(self.city)
 
         
 
@@ -131,9 +132,7 @@ class CourtScraper:
                         hearing_channel_span,
                         self.city
                     )
-                    # if self.city == "Barrow":
-                    #     print("wooooooooooo")
-                    #     print(court_case)
+               
                     court_cases.append(court_case)
                     
             return court_cases

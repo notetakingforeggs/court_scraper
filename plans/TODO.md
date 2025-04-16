@@ -22,3 +22,9 @@
 - also therefore need to do checks to not insert duplicate data, as there will be some courts that are in multiple days scrapes.
 
 - need to do testing. If you are relying on this to tell you whether or not you might be getting evicted you want it to be robust.
+
+- there is definitely at least one other semi common html structure for court pages that should be conditionally scraped/parsed
+
+- Newport IOW will need extra logic
+
+- Need better regex for cases like this: M00KH164 Matthew James (Joint LPA Receivers) -v- Persons Unknown, the v messing it up?

@@ -3,14 +3,15 @@ CITY_SET = {
 "Aldershot & Farnham",
 "Barnet",
 "Barnsley",
-"Barrow",
-"Basildon",
+"Barnstaple", #issue
+"Barrow", #issue
+"Basildon", #issue
 "Basingstoke",
 "Bath",
-"Bedford",
+"Bedford", #issue
 "Birkenhead",
 "Birmingham",
-"Blackburn",
+"Blackburn", #issue
 "Blackpool",
 "Blackwood",
 "Boston",
@@ -21,58 +22,59 @@ CITY_SET = {
 "Bristol",
 "Bromley",
 "Burnley",
-"Bury St Edmunds",
-"Caernarfon",
-"Cambridge",
-"Canterbury",
-"Cardiff",
-"Carlisle",
-"Central Family",
-"Central London",
-"Chelmsford",
-"Chester",
-"Chesterfield",
-"Clerkenwell & Shoreditch",
-"Colchester",
-"Court of Protection",
+"Bury St Edmunds", #issue
+"Caernarfon", #issue
+"Cambridge", #issue
+"Canterbury", 
+"Cardiff",#issue
+"Carlisle", #issue
+"Central Family", #issue
+"Central London", #issue
+"Chelmsford",#issue
+"Chester",#issue
+"Chesterfield",#issue
+"Clerkenwell & Shoreditch",#issue
+"Colchester", #issue
+"Court of Protection", #issue
 "Coventry",
-"Crewe",
+"Crewe",#issue
 "Croydon",
 "Darlington",
-"Dartford",
+"Dartford",#issue
 "Derby",
-"Doncaster",
-"Dudley",
+"Doncaster", #issue
+"Dudley", #issue
 "Durham",
 "East London",
 "Edmonton",
 "Exeter",
 "Gateshead",
 "Gloucester",
-"Great Grimsby",
-"Guildford",
-"Harrogate",
-"Hastings",
+"Great Grimsby", #issue
+"Guildford", #issue
+"Harrogate", #issue
+"Hastings", #issue
 "Haverfordwest",
-"Hertford",
-"High Wycombe",
-"Horsham",
-"Huddersfield",
-"Ipswich",
-"Kingston upon Hull",
+"Hertford", #issue
+"High Wycombe", #issue
+"Horsham", #issue
+"Huddersfield", #issue
+"Ipswich", #issue
+"Kingston upon Hull", #issue
 "Kingston upon Thames",
-"Lancaster",
-"Leeds",
-"Leicester",
+"Lancaster", #issue
+"Leeds",#issue
+"Leicester",#issue
 "Lincoln",
 "Liverpool",
 "Llanelli",
-"Luton",
+"Luton", #issue  TODO why are these not being scraped... maybe try and figure and see if fixes.
 "Maidstone",
 "Manchester",
 "Mansfield",
 "Medway",
 "Merthyr Tydfil",
+"Middlesbrough",
 "Milton Keynes",
 "Mold",
 "Newcastle Upon Tyne",
@@ -109,7 +111,6 @@ CITY_SET = {
 "Swansea",
 "Swindon",
 "Taunton",
-"Teesside (Middlesbrough)",
 "Telford",
 "Thanet",
 "Torquay & Newton Abbot",
