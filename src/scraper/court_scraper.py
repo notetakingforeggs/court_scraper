@@ -21,6 +21,7 @@ class CourtScraper:
 
     def load_case_page(self):
         """ Gets new tab urls from each court listing. """
+        print("hihihi")
         #load page of cases from url
         # get soup for content of daily causes page using session cookies from inital log in
         response = self.session.get(self.court_url)
@@ -30,12 +31,25 @@ class CourtScraper:
 
         # find box containing "open list in new tab" link and get path
         box2 = soup.find("div", id="box2")
+        if not box2:
+            print(f"no box2 at{self.court_url}")
+            return None
         new_tab_anchor = box2.find("a")
+        if not new_tab_anchor:
+            print(f"no new tab link at {self.court_url}")
+            return None
+            
         new_tab_url = new_tab_anchor["href"] # get url "open list..." link
         self.new_tab_url = new_tab_url
 
+
+        # returns the url to allow for conditional continuation
+        return new_tab_url
+
     def get_case_list_soup(self):
         """Gets case list soup from case list page."""
+
+        
         case_list_response = self.session.get(CASE_LIST_BASE_URL + self.new_tab_url)            
         self.case_soup = bs(case_list_response.text, "html.parser")
         
@@ -47,13 +61,13 @@ class CourtScraper:
         
         court_name_string = court_name_elem.get_text(strip=True) if court_name_elem else "Unknown Court"
         city= ""
-        
+        # print(court_name_string)
+
         for c in CITY_SET:
             city_pattern = rf"\b{re.escape(c.lower())}\b"
             if re.search(city_pattern, court_name_string.lower()):
                 city = c
             self.city = city
-            print(city)
 
         
 
@@ -89,6 +103,7 @@ class CourtScraper:
         """Converts each row into a court case object."""
         court_cases = []
         try:
+            
             for row in messy_texts:          
                 _, _, start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row
                 start_time_span = (" ".join(start_time_span.split()))
@@ -116,6 +131,9 @@ class CourtScraper:
                         hearing_channel_span,
                         self.city
                     )
+                    # if self.city == "Barrow":
+                    #     print("wooooooooooo")
+                    #     print(court_case)
                     court_cases.append(court_case)
                     
             return court_cases

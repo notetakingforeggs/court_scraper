@@ -64,6 +64,8 @@ def insert_court_case(court_case:CourtCase, court_id):
                         court_id
                     )
                 )
+        if court_case.city == "Barrow":
+            print(court_case)
     except psycopg2.IntegrityError as e:
         print(f"case already exists?: {court_case}\n {e.with_traceback}")
 
