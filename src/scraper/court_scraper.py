@@ -74,7 +74,7 @@ class CourtScraper:
         # select only rows with times in
         rows = self.case_soup.findAll("tr") 
         rows_with_times = []
-
+        
         for row in rows:
             if row.find("tr"): # ignore rows that contain other rows, as only the most deeply nested are desired to avoid duplication
                 continue
@@ -84,7 +84,7 @@ class CourtScraper:
                 if "AM" in text or "PM" in text:
                     rows_with_times.append(row)
 
-        
+
         case_count = 1       
         row_texts_messy = []
         for row in rows_with_times:
@@ -92,6 +92,7 @@ class CourtScraper:
             texts = [span.text.strip() for span in spans]
             row_texts_messy.append(texts)
             case_count += 1 
+        
         return row_texts_messy
        
 
@@ -99,21 +100,37 @@ class CourtScraper:
     def _process_rows_to_cases(self, messy_texts, date):
         """Converts each row into a court case object."""
         court_cases = []
-        try:
+    
+        
+        for row in messy_texts:   
+
+            try:
+                if len(row) == 8:
+                    _, _, start_time_span, duration_span, case_details_span_1, case_details_span_2, hearing_type_span, hearing_channel_span = row
+                    case_details_span = case_details_span_1 + case_details_span_2
+                elif len(row) == 7:
+                    _, _, start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row
+                elif len(row) == 6:
+                    _, start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row
+                elif len(row) == 5:
+                    start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row
+                else:
+                    print(f"unexpected row size, skipping this one {row}")
+                    continue
             
-            for row in messy_texts:          
-                _, _, start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row
+                
+           
                 start_time_span = (" ".join(start_time_span.split()))
                 hearing_channel_span = " ".join(hearing_channel_span.split())
                 hearing_type_span = " ".join(hearing_type_span.split())
 
-                if re.search(r' v |vs|-v-', case_details_span): #TODO ignoring situations in which there is no claimant vs defendant for now, do i need that though?
+                if re.search(r' v |vs|-v-|-V-', case_details_span): #TODO ignoring situations in which there is no claimant vs defendant for now, do i need that though?
                     case_details_list = case_details_span.split(" ")
                     case_id = case_details_list[0]
 
                     parties_string = (" ").join(case_details_list[1:])
 
-                    match = re.search(r"(.+?)\s*(?:v|vs|-v-)\s*(.+)", parties_string) 
+                    match = re.search(r"(.+?)\s*(?:v|vs|-v-|-V-|-V-)\s*(.+)", parties_string) 
                     if match:
                         claimant = match.group(1).strip()
                         defendant = match.group(2).strip()
@@ -128,13 +145,16 @@ class CourtScraper:
                         hearing_channel_span,
                         self.city
                     )
-               
+                    if self.city == "Clerkenwell":
+                        print(court_case) 
                     court_cases.append(court_case)
-                    
-            return court_cases
-        except (IndexError, ValueError) as e:
-            # print(f"index error: {e}, likely an issue with the number of items in the row not being the same as the number of values expected for unpacking")
-            pass
+            except (IndexError, ValueError)  as e:
+                print(f"issue with unpacking {e}\n {row}") # this may now be redundant due to the elif chain?
+        if self.city == "Clerkenwell":
+            print(court_cases)          
+        return court_cases
+        
+            
 
     def rows_to_objects(self, date):
         
