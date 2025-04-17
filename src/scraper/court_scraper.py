@@ -105,11 +105,13 @@ class CourtScraper:
         for row in messy_texts:   
 
             try:
-                if len(row) == 8:
-                    _, _, start_time_span, duration_span, case_details_span_1, case_details_span_2, hearing_type_span, hearing_channel_span = row
+                if len(row)>8:
+                    start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row[2:7]
+                elif len(row) == 8:
+                    start_time_span, duration_span, case_details_span_1, case_details_span_2, hearing_type_span, hearing_channel_span = row[2:7]
                     case_details_span = case_details_span_1 + case_details_span_2
                 elif len(row) == 7:
-                    _, _, start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row
+                    start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row[2:7]
                 elif len(row) == 6:
                     _, start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row
                 elif len(row) == 5:
