@@ -106,9 +106,15 @@ class CourtScraper:
 
             try:
                 if len(row)>8:
-                    start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row[2:7]
+                    print(f"row lenght longer than 8, this may introduce bad data/None values") #TODO fix this, leaving them out for now
+                    continue
+                    try:
+                        start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row[2:7]
+                    except Exception as e:
+                        print(f"tried to unpack, and got exception: {e}")
+                        continue
                 elif len(row) == 8:
-                    start_time_span, duration_span, case_details_span_1, case_details_span_2, hearing_type_span, hearing_channel_span = row[2:7]
+                    start_time_span, duration_span, case_details_span_1, case_details_span_2, hearing_type_span, hearing_channel_span = row[2:8]
                     case_details_span = case_details_span_1 + case_details_span_2
                 elif len(row) == 7:
                     start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row[2:7]
@@ -120,7 +126,8 @@ class CourtScraper:
                     print(f"unexpected row size, skipping this one {row}")
                     continue
             
-                
+                # TODO some of the case details td cells have two spans in, use the re.search for v to find these cells and conditional
+                # for two spans, consequently joining the inner text into one case details var... maybe can do this before then feeding the rows in?
            
                 start_time_span = (" ".join(start_time_span.split()))
                 hearing_channel_span = " ".join(hearing_channel_span.split())
@@ -147,13 +154,9 @@ class CourtScraper:
                         hearing_channel_span,
                         self.city
                     )
-                    if self.city == "Clerkenwell":
-                        print(court_case) 
                     court_cases.append(court_case)
             except (IndexError, ValueError)  as e:
-                print(f"issue with unpacking {e}\n {row}") # this may now be redundant due to the elif chain?
-        if self.city == "Clerkenwell":
-            print(court_cases)          
+                print(f"issue with unpacking {e}\n {row}") # this may now be redundant due to the elif chain?     
         return court_cases
         
             

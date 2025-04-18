@@ -37,8 +37,6 @@ def insert_court_case(court_case:CourtCase, court_id):
     conn = get_connection()
     try:
         with conn:
-            print(f"city before db add: {court_case.city}")
-            print("hihih")
             with conn.cursor() as cur:
                 cur.execute(
                     '''
