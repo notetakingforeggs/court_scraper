@@ -1,6 +1,6 @@
 CITY_SET = {
 "Aberystwyth",
-"Aldershot & Farnham",
+"Aldershot",
 "Barnet",
 "Barnsley",
 "Barnstaple", 
