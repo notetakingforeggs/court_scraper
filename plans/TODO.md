@@ -33,4 +33,12 @@
 
 - stratford needs to be included separately to clerkenwell and shoreditch
 
-- Central london is a different format
+- Central london is a different format, slough also, maybe distinguishable from: "Civil and Family Daily Cause List"
+
+- Not all of east london are coming through?
+
+- Maybe create a debug statement so that I can see how many courts are found per location? to compare with website to see if any are being missed.
+
+- may as well take all data whilst im here. new fields for cases without claimant/defendant structures.
+
+- DO PERSIST RAW CASE DETAILS STRING
