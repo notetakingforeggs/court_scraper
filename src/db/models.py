@@ -9,8 +9,10 @@ class CourtCase:
     start_time_string: str
     date: str
     duration: str
+    case_details: str
     claimant: str
     defendant: str
+    is_minor: bool
     hearing_type: str
     hearing_channel: str
     city: str 
