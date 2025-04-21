@@ -64,7 +64,6 @@ class CourtScraper:
             city_pattern = rf"\b{re.escape(c.lower())}\b"
             if re.search(city_pattern, court_name_string.lower()):
                 self.city = c    
-        print(f"city in extract city:{self.city}")
 
         return self.city # returning city name for easier debugging in main/nb
 
@@ -81,7 +80,8 @@ class CourtScraper:
             spans = row.find_all("span") # check for AM or PM in the span childs of the row and add to rows with times if found, all desired data has a time associated with it.
             for span in spans:
                 text = span.text
-                if "AM" in text or "PM" in text:
+                pattern = r"\bAM|PM\b"
+                if re.search(pattern, text):
                     rows_with_times.append(row)
 
 
@@ -92,7 +92,7 @@ class CourtScraper:
             texts = [span.text.strip() for span in spans]
             row_texts_messy.append(texts)
             case_count += 1 
-        
+        print(f"number of rows of messy texts containing regex pattern (pre-cases): {case_count}")
         return row_texts_messy
        
 
@@ -156,7 +156,7 @@ class CourtScraper:
                     )
                     court_cases.append(court_case)
             except (IndexError, ValueError)  as e:
-                print(f"issue with unpacking {e}\n {row}") # this may now be redundant due to the elif chain?     
+                print(f"issue with unpacking {e}\n Row: {row}") # this may now be redundant due to the elif chain?     
         return court_cases
         
             
