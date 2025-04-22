@@ -43,22 +43,26 @@ def insert_court_case(court_case:CourtCase, court_id):
                         INSERT INTO court_case(
                         start_time_epoch,
                         duration,
+                        case_details,
                         case_id,
                         claimant,
                         defendant,
+                        is_minor,
                         hearing_type,
                         hearing_channel,
                         court_id
                         )
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                         RETURNING id
                     ''',
                     (
                         court_case.start_time_epoch,
                         court_case.duration,
+                        court_case.case_details,
                         court_case.case_id,
                         court_case.claimant,
                         court_case.defendant,
+                        court_case.is_minor,
                         court_case.hearing_type,
                         court_case.hearing_channel,
                         court_id
