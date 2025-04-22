@@ -41,4 +41,6 @@
 
 - may as well take all data whilst im here. new fields for cases without claimant/defendant structures.
 
-- DO PERSIST RAW CASE DETAILS STRING
+- DO PERSIST RAW CASE DETAILS STRING, good for reference and when parsing breaks
+
+- clean up duration strings, maybe also clean into minutes?

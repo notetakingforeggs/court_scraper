@@ -114,13 +114,17 @@ class CourtScraper:
                         print(f"tried to unpack, and got exception: {e}")
                         continue
                 elif len(row) == 8:
+                    print("88888888888888")
                     start_time_span, duration_span, case_details_span_1, case_details_span_2, hearing_type_span, hearing_channel_span = row[2:8]
                     case_details_span = case_details_span_1 + case_details_span_2
                 elif len(row) == 7:
+                    print("77777777777")
                     start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row[2:7]
-                elif len(row) == 6:
+                elif len(row) == 6: # No rows have six?
+                    print("66666666666")
                     _, start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row
                 elif len(row) == 5:
+                    print("5555555555")
                     start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row
                 else:
                     print(f"unexpected row size, skipping this one {row}")
@@ -136,30 +140,36 @@ class CourtScraper:
                 case_details_list = case_details_span.split(" ")
                 case_id = case_details_list[0]
 
-                if re.search(r' v |vs|-v-|-V-', case_details_span): #TODO ignoring situations in which there is no claimant vs defendant for now, do i need that though?
-                 
-                    parties_string = (" ").join(case_details_list[1:])
+                print(case_details_span)
+                print(case_details_list)
 
-                    match = re.search(r"(.+?)\s*(?:v|vs|-v-|-V-|-V-)\s*(.+)", parties_string) 
-                    if match:
+                details_span_less_case_id = (" ").join(case_details_list[1:])
+
+
+                if re.search(r' v |vs|-v-|-V-', case_details_span): 
+                 
+                    match = re.search(r"(.+?)\s*(?:v|vs|-v-|-V-|-V-)\s*(.+)", details_span_less_case_id) 
+                    if match: # maybe there is a bug where the first research passes and the second one doesnt?
                         claimant = match.group(1).strip()
                         defendant = match.group(2).strip()
-                    court_case = CourtCase(
-                        case_id,
-                        start_time_span,
-                        date,
-                        duration_span,
-                        case_details_span,
-                        claimant,
-                        defendant,
-                        False,
-                        hearing_type_span,
-                        hearing_channel_span,
-                        self.city
-                    )
-                    court_cases.append(court_case)
-                elif re.search(r"a minor", re.escape(case_details_span.lower())):# TODO 
-                    if len(case_details_list) == 4:
+                        court_case = CourtCase(
+                            case_id,
+                            start_time_span,
+                            date,
+                            duration_span,
+                            case_details_span,
+                            claimant,
+                            defendant,
+                            False,
+                            hearing_type_span,
+                            hearing_channel_span,
+                            self.city
+                        )
+                        court_cases.append(court_case)
+                # TODO this is not being reached... only effs in the db.
+                elif re.search(r"a minor", details_span_less_case_id.lower()):
+                    print("ppowoiewpoiepwi")
+                    if len(case_details_list) == 5:  # TODO think about this... why am i doing this if else clause? there was a case where it made sense I think? length 5??/
                         court_case = CourtCase(
                         case_id,
                         start_time_span,
@@ -173,21 +183,25 @@ class CourtScraper:
                         hearing_channel_span,
                         self.city
                         )
+                        court_cases.append(court_case)
 
-                else: 
-                        court_case = CourtCase(
-                        case_id,
-                        start_time_span,
-                        date,
-                        duration_span,
-                        case_details_span,
-                        None,
-                        None,
-                        False,
-                        hearing_type_span,
-                        hearing_channel_span,
-                        self.city
-                    )
+
+                    else: 
+                            court_case = CourtCase(
+                            case_id,
+                            start_time_span,
+                            date,
+                            duration_span,
+                            case_details_span,
+                            None,
+                            None,
+                            True,
+                            hearing_type_span,
+                            hearing_channel_span,
+                            self.city
+                        )
+                            court_cases.append(court_case)
+
                 
             except (IndexError, ValueError)  as e:
                 print(f"issue with unpacking {e}\n Row: {row}") # this may now be redundant due to the elif chain?     
