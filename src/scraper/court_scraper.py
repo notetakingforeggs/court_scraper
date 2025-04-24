@@ -3,6 +3,7 @@
 from db.models import CourtCase
 from bs4 import BeautifulSoup as bs
 from utils.city_set import CITY_SET
+from utils.time_converter import parse_duration
 import re
 
 
@@ -139,6 +140,7 @@ class CourtScraper:
                 # for two spans, consequently joining the inner text into one case details var... maybe can do this before then feeding the rows in?
            
                 start_time_span = (" ".join(start_time_span.split()))
+                duration_span = parse_duration(duration_span)
                 hearing_channel_span = " ".join(hearing_channel_span.split())
                 hearing_type_span = " ".join(hearing_type_span.split())
 
@@ -219,3 +221,4 @@ class CourtScraper:
         raw_row_texts = self._extract_case_rows()
         court_cases = self._process_rows_to_cases(raw_row_texts, date)
         return court_cases
+

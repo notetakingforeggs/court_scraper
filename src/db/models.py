@@ -8,7 +8,7 @@ class CourtCase:
     case_id: str
     start_time_string: str
     date: str
-    duration: str
+    duration: int
     case_details: str
     claimant: str
     defendant: str

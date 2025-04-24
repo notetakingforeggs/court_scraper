@@ -58,7 +58,7 @@
 
 steps now though...
 
-1. fix current tests
+1. ~~fix current tests~~
 2. clean up duration strings
 3. consider refactoring any sprawling methods into smaller subunits
 4. build out test suite for scraping including full page scrape for normal case

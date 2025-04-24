@@ -26,11 +26,14 @@ def parse_duration(duration_span_raw: Optional[str]) -> Optional[int]:
     duration_span_raw = re.sub(r'\s+', ' ', duration_span_raw)
 
 
-    hour_patterns = r"(hour[s]?|awr[s]?)"
-    minute_patterns = r"(minute[s]?|munud[s]?)"
+    hour_patterns = r"(?:hour[s]?|awr[s]?)"
+    minute_patterns = r"(?:minute[s]?|munud[s]?)"
 
     full_match = re.search(rf"(\d+)\s*{hour_patterns}.*?(\d+)\s*{minute_patterns}", duration_span_raw)
     if full_match:
+        print(f"group1: {full_match.group(1)}")
+        print(f"group2: {full_match.group(2)}")
+
         hours = int(full_match.group(1))
         minutes = int(full_match.group(2))
         return hours*60 + minutes
