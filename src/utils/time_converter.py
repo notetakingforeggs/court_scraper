@@ -18,13 +18,16 @@ def convert_to_unix_timestamp(time_str:str, date:str) -> int:
     return unix_timestamp
 
 def parse_duration(duration_span_raw: Optional[str]) -> Optional[int]:
+    print("in parse duration method")
     if not duration_span_raw:
+        print("no span?")
         return None
     
     # Normalising input
     duration_span_raw = re.sub(r'r/', '', duration_span_raw).strip().lower() # get rid of that weird r thing
     duration_span_raw = re.sub(r'\s+', ' ', duration_span_raw)
 
+    print(duration_span_raw)
 
     hour_patterns = r"(?:hour[s]?|awr[s]?)"
     minute_patterns = r"(?:minute[s]?|munud[s]?)"
@@ -40,12 +43,14 @@ def parse_duration(duration_span_raw: Optional[str]) -> Optional[int]:
 
     hour_match = re.search(rf'(\d)\s*{hour_patterns}', duration_span_raw)
     if hour_match:
+        print(hour_match.group(1))
         hours = int(hour_match.group(1))
         return hours*60
     
-    minute_match = re.search(rf'(\d)\s*{minute_patterns}', duration_span_raw)
+    minute_match = re.search(rf'(\d+)\s*{minute_patterns}', duration_span_raw)
     if minute_match:    
         minutes = int(minute_match.group(1))
+        print(f"minutes: {minutes}")
         return minutes
 
 
