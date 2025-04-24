@@ -46,7 +46,7 @@ def test_no_city_name():
     '''
     scraper = create_scraper_with_html(html)
     scraper.extract_city_and_court_name()
-    assert scraper.city == ""
+    assert scraper.city == None
 def test_no_b_tag():
     html =  '''
     <html>
@@ -57,12 +57,12 @@ def test_no_b_tag():
     '''
     scraper = create_scraper_with_html(html)
     scraper.extract_city_and_court_name()
-    assert scraper.city == ""
+    assert scraper.city == None
 def test_no_html():
     html =  ""
     scraper = create_scraper_with_html(html)
     scraper.extract_city_and_court_name()
-    assert scraper.city == ""
+    assert scraper.city == None
 def multiple_b_tags():
     html =  '''
     <html>

@@ -51,10 +51,13 @@ class CourtScraper:
         
         case_list_response = self.session.get(CASE_LIST_BASE_URL + self.new_tab_url)            
         self.case_soup = bs(case_list_response.text, "html.parser")
+        if not self.case_soup:
+            print("no soup")
         
 
     def extract_city_and_court_name(self):
         """Extracts city and court name from the soup and stores inside the court_scraper object."""
+
         court_name_elem = self.case_soup.find("b")
         
         court_name_string = court_name_elem.get_text(strip=True) if court_name_elem else "Unknown Court"
@@ -65,6 +68,8 @@ class CourtScraper:
             if re.search(city_pattern, court_name_string.lower()):
                 self.city = c    
 
+        if self.city == None:
+            print("Issue finding city for this court")# TODO better logging here
         return self.city # returning city name for easier debugging in main/nb
 
     def _extract_case_rows(self):
@@ -114,17 +119,17 @@ class CourtScraper:
                         print(f"tried to unpack, and got exception: {e}")
                         continue
                 elif len(row) == 8:
-                    print("88888888888888")
+                    # print("88888888888888")
                     start_time_span, duration_span, case_details_span_1, case_details_span_2, hearing_type_span, hearing_channel_span = row[2:8]
                     case_details_span = case_details_span_1 + case_details_span_2
                 elif len(row) == 7:
-                    print("77777777777")
+                    # print("77777777777")
                     start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row[2:7]
                 elif len(row) == 6: # No rows have six?
-                    print("66666666666")
+                    # print("66666666666")
                     _, start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row
                 elif len(row) == 5:
-                    print("5555555555")
+                    # print("5555555555")
                     start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row
                 else:
                     print(f"unexpected row size, skipping this one {row}")
