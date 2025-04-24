@@ -136,7 +136,7 @@ class CourtScraper:
                     print(f"unexpected row size, skipping this one {row}")
                     continue
             
-                # TODO some of the case details td cells have two spans in, use the re.search for v to find these cells and conditional
+                # TODO some of the case details d cells have two spans in, use the re.search for v to find these cells and conditional
                 # for two spans, consequently joining the inner text into one case details var... maybe can do this before then feeding the rows in?
            
                 start_time_span = (" ".join(start_time_span.split()))
@@ -173,9 +173,7 @@ class CourtScraper:
                             self.city
                         )
                         court_cases.append(court_case)
-                # TODO this is not being reached... only effs in the db.
                 elif re.search(r"a minor", details_span_less_case_id.lower()):
-                    print("ppowoiewpoiepwi")
                     if len(case_details_list) == 5:  # TODO think about this... why am i doing this if else clause? there was a case where it made sense I think? length 5??/
                         court_case = CourtCase(
                         case_id,
