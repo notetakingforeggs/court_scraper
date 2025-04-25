@@ -4,6 +4,11 @@ from db.models import CourtCase
 from bs4 import BeautifulSoup as bs
 from utils.city_set import CITY_SET
 from utils.time_converter import parse_duration
+from scraper.clients.court_client import CourtClient
+from scraper.parsers.entry_page_parser import EntryPageParser
+from scraper.parsers.court_list_parser import DailyCauseListParser
+from db.db_methods import get_court_id_by_city
+from factories.court_case_factory import CourtCaseFactory
 import re
 
 
@@ -12,6 +17,7 @@ CASE_LIST_BASE_URL = "https://www.courtserve.net/courtlists/viewcourtlistv2.php"
 
 class CourtScraper:
     def __init__(self, session, court_url):
+
         self.session = session
         self.court_url = court_url
         self.new_tab_url = None
@@ -20,86 +26,148 @@ class CourtScraper:
         self.case_rows = None
         self.case_soup = None
 
-    def load_case_page(self):
-        """ Gets new tab urls from each court listing. """
-        #load page of cases from url
-        # get soup for content of daily causes page using session cookies from inital log in
-        response = self.session.get(self.court_url)
+        self.court_client = CourtClient(self.session, CASE_LIST_BASE_URL)
 
-        # convert html from request into soup
-        soup = bs(response.text, "html.parser")
-
-        # find box containing "open list in new tab" link and get path
-        box2 = soup.find("div", id="box2")
-        if not box2:
-            print(f"no box2 at{self.court_url}")
-            return None
-        new_tab_anchor = box2.find("a")
-        if not new_tab_anchor:
-            print(f"no new tab link at {self.court_url}")
-            return None
-            
-        new_tab_url = new_tab_anchor["href"] # get url "open list..." link
-        self.new_tab_url = new_tab_url
-
-
-        # returns the url to allow for conditional continuation
-        return new_tab_url
-
-    def get_case_list_soup(self):
-        """Gets case list soup from case list page."""
-
-        
-        case_list_response = self.session.get(CASE_LIST_BASE_URL + self.new_tab_url)            
-        self.case_soup = bs(case_list_response.text, "html.parser")
-        if not self.case_soup:
-            print("no soup")
-        
-
-    def extract_city_and_court_name(self):
-        """Extracts city and court name from the soup and stores inside the court_scraper object."""
-
-        court_name_elem = self.case_soup.find("b")
-        
-        court_name_string = court_name_elem.get_text(strip=True) if court_name_elem else "Unknown Court"
-
-        print(court_name_string)
-        for c in CITY_SET:
-            city_pattern = rf"\b{re.escape(c.lower())}\b"
-            if re.search(city_pattern, court_name_string.lower()):
-                self.city = c    
-
-        if self.city == None:
-            print("Issue finding city for this court")# TODO better logging here
-        return self.city # returning city name for easier debugging in main/nb
-
-    def _extract_case_rows(self):
-        '''Extract all text from table data tahs in rows.'''
-
-        # select only rows with times in
-        rows = self.case_soup.findAll("tr") 
-        rows_with_times = []
-        
-        for row in rows:
-            if row.find("tr"): # ignore rows that contain other rows, as only the most deeply nested are desired to avoid duplication
+    # passing session from main where it is returned from the session/login call. BASE URL in main also?
+    def run(self, links_and_dates, session, BASE_URL): # this function orchestrates the scraping process, and should be called from main and takes the links and dates list from the county court list scrape (change this at some point maybe?)
+        # Most methods below are from this class, but i now need to move them elsewhere and call them from here.
+        for i, (link, date) in enumerate (links_and_dates):
+            if i < 1:
                 continue
-            spans = row.find_all("span") # check for AM or PM in the span childs of the row and add to rows with times if found, all desired data has a time associated with it.
-            for span in spans:
-                text = span.text
-                pattern = r"\bAM|PM\b"
-                if re.search(pattern, text):
-                    rows_with_times.append(row)
+            
+            # can pass sesion and base url from main for now...
+            courtScraper = CourtScraper(session, BASE_URL + link) # for each link, initialise a court scraper obj
+            
+            # this is parsing logic? and http logic? "Entry Page" as it is the page that contains the new tab url that leads to the content thta is visible but as embedded html
+            entry_page_response_text = courtScraper.court_client.fetch_list_page(link) # TODO lost conditional check for new tab url here.
+
+            entry_page_parser =  EntryPageParser(entry_page_response_text)
+
+            new_tab_url = entry_page_parser.parse_for_new_tab_url()
+
+            # TODO  courtScraper.get_case_list_soup()
+            case_list_response_text = courtScraper.court_client.fetch_list_page(CASE_LIST_BASE_URL + new_tab_url)            
+            
+            
+            # self.case_soup = bs(case_list_response_text, "html.parser")
+            # if not self.case_soup:
+            #     print("no soup")         
+
+            court_list_parser  = DailyCauseListParser(case_list_response_text)
+
+            city = court_list_parser.extract_city()
+
+            row_texts_messy  = court_list_parser.extract_case_rows()
 
 
-        case_count = 1       
-        row_texts_messy = []
-        for row in rows_with_times:
-            spans = row.find_all("span")     
-            texts = [span.text.strip() for span in spans]
-            row_texts_messy.append(texts)
-            case_count += 1 
-        print(f"{self.city}: number of rows of messy texts containing regex pattern (pre-cases): {case_count}")
-        return row_texts_messy
+            
+            # TODO rows to objects become factory
+            court_case_factory = CourtCaseFactory(date, row_texts_messy)
+            court_cases = court_case_factory.process_rows_to_cases()
+
+
+            if not court_cases:
+                print(f"failure to get court cases for: {city}")
+                continue
+            for case in court_cases: # iterate through scraped court cases and add to db
+                court_id = get_court_id_by_city(case.city)
+
+            if not court_id and case.city:
+                print(f"no court id for {case.city}")
+                continue 
+            
+            # insert_court_case(case, court_id)
+            print(f"{city} has {len(court_cases)} court cases")
+            return(case, court_id)
+
+
+
+        
+
+
+
+
+
+    # def load_case_page(self):
+    #     """ Gets new tab urls from each court listing. """
+    #     #load page of cases from url
+    #     # get soup for content of daily causes page using session cookies from inital log in
+    #     response = self.session.get(self.court_url)
+
+    #     # convert html from request into soup
+    #     soup = bs(response.text, "html.parser")
+
+    #     # find box containing "open list in new tab" link and get path
+    #     box2 = soup.find("div", id="box2")
+    #     if not box2:
+    #         print(f"no box2 at{self.court_url}")
+    #         return None
+    #     new_tab_anchor = box2.find("a")
+    #     if not new_tab_anchor:
+    #         print(f"no new tab link at {self.court_url}")
+    #         return None
+            
+    #     new_tab_url = new_tab_anchor["href"] # get url "open list..." link
+    #     self.new_tab_url = new_tab_url
+
+
+    #     # returns the url to allow for conditional continuation
+    #     return new_tab_url
+
+    # def get_case_list_soup(self):
+    #     """Gets case list soup from case list page."""
+
+        
+    #     case_list_response = self.session.get(CASE_LIST_BASE_URL + self.new_tab_url)            
+    #     self.case_soup = bs(case_list_response.text, "html.parser")
+    #     if not self.case_soup:
+    #         print("no soup")
+        
+
+    # def extract_city_and_court_name(self):
+    #     """Extracts city and court name from the soup and stores inside the court_scraper object."""
+
+    #     court_name_elem = self.case_soup.find("b")
+        
+    #     court_name_string = court_name_elem.get_text(strip=True) if court_name_elem else "Unknown Court"
+
+    #     print(court_name_string)
+    #     for c in CITY_SET:
+    #         city_pattern = rf"\b{re.escape(c.lower())}\b"
+    #         if re.search(city_pattern, court_name_string.lower()):
+    #             self.city = c    
+
+    #     if self.city == None:
+    #         print("Issue finding city for this court")# TODO better logging here
+    #     return self.city # returning city name for easier debugging in main/nb
+
+    # def _extract_case_rows(self):
+    #     '''Extract all text from table data tahs in rows.'''
+
+    #     # select only rows with times in
+    #     rows = self.case_soup.findAll("tr") 
+    #     rows_with_times = []
+        
+    #     for row in rows:
+    #         if row.find("tr"): # ignore rows that contain other rows, as only the most deeply nested are desired to avoid duplication
+    #             continue
+    #         spans = row.find_all("span") # check for AM or PM in the span childs of the row and add to rows with times if found, all desired data has a time associated with it.
+    #         for span in spans:
+    #             text = span.text
+    #             pattern = r"\bAM|PM\b"
+    #             if re.search(pattern, text):
+    #                 rows_with_times.append(row)
+
+
+    #     case_count = 1       
+    #     row_texts_messy = []
+    #     for row in rows_with_times:
+    #         spans = row.find_all("span")     
+    #         texts = [span.text.strip() for span in spans]
+    #         row_texts_messy.append(texts)
+    #         case_count += 1 
+    #     print(f"{self.city}: number of rows of messy texts containing regex pattern (pre-cases): {case_count}")
+    #     return row_texts_messy
        
 
 
