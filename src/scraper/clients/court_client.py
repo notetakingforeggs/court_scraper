@@ -3,8 +3,11 @@ class CourtClient:
         self.session = session
         self.base_url = base_url
 
-    def fetch_list_page(self, court_url)-> str:
-        response = self.session.get(court_url)
+    def fetch_entry_page(self, court_url)-> str:
+        print(self.base_url)
+        print(court_url)
+        print(self.base_url + court_url)
+        response = self.session.get(self.base_url + court_url)
         response.raise_for_status()
         return response.text
     

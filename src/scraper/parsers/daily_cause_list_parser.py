@@ -12,7 +12,7 @@ class DailyCauseListParser:
 
 
     def extract_city(self):
-        """Extracts city / court name from the court case list."""
+        """Extracts city / court name from the court case cause list."""
         if not self.case_soup:
             print("no soup")
 
@@ -30,7 +30,7 @@ class DailyCauseListParser:
             print("Issue finding city for this court")# TODO better logging here
         return city # returning city name for easier debugging in main/nb
     
-    def _extract_case_rows(self):
+    def extract_case_rows(self):
         '''Extract all text from table data tahs in rows.'''
 
         # select only rows with times in
@@ -55,5 +55,5 @@ class DailyCauseListParser:
             texts = [span.text.strip() for span in spans]
             row_texts_messy.append(texts)
             case_count += 1 
-        print(f"{self.city}: number of rows of messy texts containing regex pattern (pre-cases): {case_count}")
+        # print(f"{self.city}: number of rows of messy texts containing regex pattern (pre-cases): {case_count}")
         return row_texts_messy
