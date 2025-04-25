@@ -4,9 +4,10 @@ import re
 
 class CourtCaseFactory:
 
-    def __init__(self, messy_texts, date):
+    def __init__(self, messy_texts, date, city):
         self.messy_texts = messy_texts
         self.date = date
+        self.city = city
 
 
     def process_rows_to_cases(self):
@@ -15,7 +16,7 @@ class CourtCaseFactory:
         
             
             for row in self.messy_texts:   
-
+                print(f"row = {row}")
                 try:
                     if len(row)>8:
                         print(f"row lenght longer than 8, this may introduce bad data/None values") #TODO fix this, leaving them out for now

@@ -9,6 +9,7 @@ class DailyCauseListParser:
         self.html = html
         self.CITY_SET = CITY_SET
         self.case_soup = bs(self.html, "html.parser")
+        self.city = None # just for debugging with print statements
 
 
     def extract_city(self):
@@ -19,16 +20,15 @@ class DailyCauseListParser:
         court_name_elem = self.case_soup.find("b")
         
         court_name_string = court_name_elem.get_text(strip=True) if court_name_elem else "Unknown Court"
-        city = ""
         print(court_name_string)
         for c in CITY_SET:
             city_pattern = rf"\b{re.escape(c.lower())}\b"
             if re.search(city_pattern, court_name_string.lower()):
-                city = c    
+                self.city = c    
 
-        if city == None:
+        if self.city == None:
             print("Issue finding city for this court")# TODO better logging here
-        return city # returning city name for easier debugging in main/nb
+        return self.city # returning city name for easier debugging in main/nb
     
     def extract_case_rows(self):
         '''Extract all text from table data tahs in rows.'''
@@ -55,5 +55,5 @@ class DailyCauseListParser:
             texts = [span.text.strip() for span in spans]
             row_texts_messy.append(texts)
             case_count += 1 
-        # print(f"{self.city}: number of rows of messy texts containing regex pattern (pre-cases): {case_count}")
+        print(f"{self.city}: number of rows of messy texts containing regex pattern (pre-cases): {case_count}")
         return row_texts_messy
