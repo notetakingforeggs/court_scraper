@@ -7,7 +7,7 @@ from utils.time_converter import parse_duration
 from scraper.clients.court_client import CourtClient
 from scraper.parsers.entry_page_parser import EntryPageParser
 from scraper.parsers.court_list_parser import DailyCauseListParser
-from db.db_methods import get_court_id_by_city
+from db.db_methods import get_court_id_by_city, insert_court_case
 from factories.court_case_factory import CourtCaseFactory
 import re
 
@@ -16,10 +16,10 @@ CASE_LIST_BASE_URL = "https://www.courtserve.net/courtlists/viewcourtlistv2.php"
 
 
 class CourtScraper:
-    def __init__(self, session, court_url):
+    def __init__(self, session, links_and_dates):
 
         self.session = session
-        self.court_url = court_url
+        self.links_and_dates = links_and_dates
         self.new_tab_url = None
         self.city = None
         self.court_name = None # am i just going to collapse city and court name? so far unused i think
@@ -29,14 +29,14 @@ class CourtScraper:
         self.court_client = CourtClient(self.session, CASE_LIST_BASE_URL)
 
     # passing session from main where it is returned from the session/login call. BASE URL in main also?
-    def run(self, links_and_dates, session, BASE_URL): # this function orchestrates the scraping process, and should be called from main and takes the links and dates list from the county court list scrape (change this at some point maybe?)
+    def run(self, BASE_URL): # this function orchestrates the scraping process, and should be called from main and takes the links and dates list from the county court list scrape (change this at some point maybe?)
         # Most methods below are from this class, but i now need to move them elsewhere and call them from here.
-        for i, (link, date) in enumerate (links_and_dates):
+        for i, (link, date) in enumerate (self.links_and_dates):
             if i < 1:
                 continue
             
             # can pass sesion and base url from main for now...
-            courtScraper = CourtScraper(session, BASE_URL + link) # for each link, initialise a court scraper obj
+            courtScraper = CourtScraper(self.session, BASE_URL + link) # for each link, initialise a court scraper obj
             
             # this is parsing logic? and http logic? "Entry Page" as it is the page that contains the new tab url that leads to the content thta is visible but as embedded html
             entry_page_response_text = courtScraper.court_client.fetch_list_page(link) # TODO lost conditional check for new tab url here.
@@ -55,7 +55,7 @@ class CourtScraper:
 
             court_list_parser  = DailyCauseListParser(case_list_response_text)
 
-            city = court_list_parser.extract_city()
+            self.city = court_list_parser.extract_city()
 
             row_texts_messy  = court_list_parser.extract_case_rows()
 
@@ -66,8 +66,9 @@ class CourtScraper:
             court_cases = court_case_factory.process_rows_to_cases()
 
 
+            
             if not court_cases:
-                print(f"failure to get court cases for: {city}")
+                print(f"failure to get court cases for: {self.city}")
                 continue
             for case in court_cases: # iterate through scraped court cases and add to db
                 court_id = get_court_id_by_city(case.city)
@@ -75,10 +76,10 @@ class CourtScraper:
             if not court_id and case.city:
                 print(f"no court id for {case.city}")
                 continue 
-            
-            # insert_court_case(case, court_id)
-            print(f"{city} has {len(court_cases)} court cases")
-            return(case, court_id)
+            insert_court_case(case, court_id)
+            print(f"{self.city} has {len(court_cases)} court cases")
+
+            # return(case, court_id)
 
 
 
@@ -171,120 +172,120 @@ class CourtScraper:
        
 
 
-    def _process_rows_to_cases(self, messy_texts, date):
-        """Converts each row into a court case object."""
-        court_cases = []
+    # def _process_rows_to_cases(self, messy_texts, date):
+    #     """Converts each row into a court case object."""
+    #     court_cases = []
     
         
-        for row in messy_texts:   
+    #     for row in messy_texts:   
 
-            try:
-                if len(row)>8:
-                    print(f"row lenght longer than 8, this may introduce bad data/None values") #TODO fix this, leaving them out for now
-                    continue
-                    try:
-                        start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row[2:7]
-                    except Exception as e:
-                        print(f"tried to unpack, and got exception: {e}")
-                        continue
-                elif len(row) == 8:
-                    # print("88888888888888")
-                    start_time_span, duration_span, case_details_span_1, case_details_span_2, hearing_type_span, hearing_channel_span = row[2:8]
-                    case_details_span = case_details_span_1 + case_details_span_2
-                elif len(row) == 7:
-                    # print("77777777777")
-                    start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row[2:7]
-                elif len(row) == 6: # No rows have six?
-                    # print("66666666666")
-                    _, start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row
-                elif len(row) == 5:
-                    # print("5555555555")
-                    start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row
-                else:
-                    print(f"unexpected row size, skipping this one {row}")
-                    continue
+    #         try:
+    #             if len(row)>8:
+    #                 print(f"row lenght longer than 8, this may introduce bad data/None values") #TODO fix this, leaving them out for now
+    #                 continue
+    #                 try:
+    #                     start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row[2:7]
+    #                 except Exception as e:
+    #                     print(f"tried to unpack, and got exception: {e}")
+    #                     continue
+    #             elif len(row) == 8:
+    #                 # print("88888888888888")
+    #                 start_time_span, duration_span, case_details_span_1, case_details_span_2, hearing_type_span, hearing_channel_span = row[2:8]
+    #                 case_details_span = case_details_span_1 + case_details_span_2
+    #             elif len(row) == 7:
+    #                 # print("77777777777")
+    #                 start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row[2:7]
+    #             elif len(row) == 6: # No rows have six?
+    #                 # print("66666666666")
+    #                 _, start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row
+    #             elif len(row) == 5:
+    #                 # print("5555555555")
+    #                 start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row
+    #             else:
+    #                 print(f"unexpected row size, skipping this one {row}")
+    #                 continue
             
-                # TODO some of the case details d cells have two spans in, use the re.search for v to find these cells and conditional
-                # for two spans, consequently joining the inner text into one case details var... maybe can do this before then feeding the rows in?
+    #             # TODO some of the case details d cells have two spans in, use the re.search for v to find these cells and conditional
+    #             # for two spans, consequently joining the inner text into one case details var... maybe can do this before then feeding the rows in?
            
-                start_time_span = (" ".join(start_time_span.split()))
-                duration_span = parse_duration(duration_span)
-                hearing_channel_span = " ".join(hearing_channel_span.split())
-                hearing_type_span = " ".join(hearing_type_span.split())
+    #             start_time_span = (" ".join(start_time_span.split()))
+    #             duration_span = parse_duration(duration_span)
+    #             hearing_channel_span = " ".join(hearing_channel_span.split())
+    #             hearing_type_span = " ".join(hearing_type_span.split())
 
-                case_details_list = case_details_span.split(" ")
-                case_id = case_details_list[0]
+    #             case_details_list = case_details_span.split(" ")
+    #             case_id = case_details_list[0]
 
-                print(case_details_span)
-                print(case_details_list)
+    #             print(case_details_span)
+    #             print(case_details_list)
 
-                details_span_less_case_id = (" ").join(case_details_list[1:])
+    #             details_span_less_case_id = (" ").join(case_details_list[1:])
 
 
-                if re.search(r' v |vs|-v-|-V-', case_details_span): 
+    #             if re.search(r' v |vs|-v-|-V-', case_details_span): 
                  
-                    match = re.search(r"(.+?)\s*(?:v|vs|-v-|-V-|-V-)\s*(.+)", details_span_less_case_id) 
-                    if match: # maybe there is a bug where the first research passes and the second one doesnt?
-                        claimant = match.group(1).strip()
-                        defendant = match.group(2).strip()
-                        court_case = CourtCase(
-                            case_id,
-                            start_time_span,
-                            date,
-                            duration_span,
-                            case_details_span,
-                            claimant,
-                            defendant,
-                            False,
-                            hearing_type_span,
-                            hearing_channel_span,
-                            self.city
-                        )
-                        court_cases.append(court_case)
-                elif re.search(r"a minor", details_span_less_case_id.lower()):
-                    if len(case_details_list) == 5:  # TODO think about this... why am i doing this if else clause? there was a case where it made sense I think? length 5??/
-                        court_case = CourtCase(
-                        case_id,
-                        start_time_span,
-                        date,
-                        duration_span,
-                        case_details_span,
-                        None,
-                        None,
-                        True,
-                        hearing_type_span,
-                        hearing_channel_span,
-                        self.city
-                        )
-                        court_cases.append(court_case)
+    #                 match = re.search(r"(.+?)\s*(?:v|vs|-v-|-V-|-V-)\s*(.+)", details_span_less_case_id) 
+    #                 if match: # maybe there is a bug where the first research passes and the second one doesnt?
+    #                     claimant = match.group(1).strip()
+    #                     defendant = match.group(2).strip()
+    #                     court_case = CourtCase(
+    #                         case_id,
+    #                         start_time_span,
+    #                         date,
+    #                         duration_span,
+    #                         case_details_span,
+    #                         claimant,
+    #                         defendant,
+    #                         False,
+    #                         hearing_type_span,
+    #                         hearing_channel_span,
+    #                         self.city
+    #                     )
+    #                     court_cases.append(court_case)
+    #             elif re.search(r"a minor", details_span_less_case_id.lower()):
+    #                 if len(case_details_list) == 5:  # TODO think about this... why am i doing this if else clause? there was a case where it made sense I think? length 5??/
+    #                     court_case = CourtCase(
+    #                     case_id,
+    #                     start_time_span,
+    #                     date,
+    #                     duration_span,
+    #                     case_details_span,
+    #                     None,
+    #                     None,
+    #                     True,
+    #                     hearing_type_span,
+    #                     hearing_channel_span,
+    #                     self.city
+    #                     )
+    #                     court_cases.append(court_case)
 
 
-                    else: 
-                            court_case = CourtCase(
-                            case_id,
-                            start_time_span,
-                            date,
-                            duration_span,
-                            case_details_span,
-                            None,
-                            None,
-                            True,
-                            hearing_type_span,
-                            hearing_channel_span,
-                            self.city
-                        )
-                            court_cases.append(court_case)
+    #                 else: 
+    #                         court_case = CourtCase(
+    #                         case_id,
+    #                         start_time_span,
+    #                         date,
+    #                         duration_span,
+    #                         case_details_span,
+    #                         None,
+    #                         None,
+    #                         True,
+    #                         hearing_type_span,
+    #                         hearing_channel_span,
+    #                         self.city
+    #                     )
+    #                         court_cases.append(court_case)
 
                 
-            except (IndexError, ValueError)  as e:
-                print(f"issue with unpacking {e}\n Row: {row}") # this may now be redundant due to the elif chain?     
-        return court_cases
+    #         except (IndexError, ValueError)  as e:
+    #             print(f"issue with unpacking {e}\n Row: {row}") # this may now be redundant due to the elif chain?     
+    #     return court_cases
         
             
 
-    def rows_to_objects(self, date):
+    # def rows_to_objects(self, date):
         
-        raw_row_texts = self._extract_case_rows()
-        court_cases = self._process_rows_to_cases(raw_row_texts, date)
-        return court_cases
+    #     raw_row_texts = self._extract_case_rows()
+    #     court_cases = self._process_rows_to_cases(raw_row_texts, date)
+    #     return court_cases
 
