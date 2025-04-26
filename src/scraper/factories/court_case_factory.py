@@ -1,6 +1,7 @@
 from db.models import CourtCase
 from utils.time_converter import parse_duration
 import re
+from pprint import pprint
 
 class CourtCaseFactory:
 
@@ -13,6 +14,7 @@ class CourtCaseFactory:
     def process_rows_to_cases(self):
             """Converts each row into a court case object."""
             court_cases = []
+            pprint(self.messy_texts) #messy texts all good...
         
             
             for row in self.messy_texts:   
@@ -26,17 +28,18 @@ class CourtCaseFactory:
                             print(f"tried to unpack, and got exception: {e}")
                             continue
                     elif len(row) == 8:
-                        # print("88888888888888")
+                        print("88888888888888")
                         start_time_span, duration_span, case_details_span_1, case_details_span_2, hearing_type_span, hearing_channel_span = row[2:8]
                         case_details_span = case_details_span_1 + case_details_span_2
                     elif len(row) == 7:
-                        # print("77777777777")
+                        print("77777777777")
                         start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row[2:7]
+                        print(start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span)
                     elif len(row) == 6: # No rows have six?
-                        # print("66666666666")
+                        print("66666666666")
                         _, start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row
                     elif len(row) == 5:
-                        # print("5555555555")
+                        print("5555555555")
                         start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row
                     else:
                         print(f"unexpected row size, skipping this one {row}")
@@ -49,19 +52,14 @@ class CourtCaseFactory:
                     duration_span = parse_duration(duration_span)
                     hearing_channel_span = " ".join(hearing_channel_span.split())
                     hearing_type_span = " ".join(hearing_type_span.split())
-
                     case_details_list = case_details_span.split(" ")
                     case_id = case_details_list[0]
-
-                    print(case_details_span)
-                    print(case_details_list)
-
                     details_span_less_case_id = (" ").join(case_details_list[1:])
 
 
-                    if re.search(r' v |vs|-v-|-V-', case_details_span): 
+                    if re.search(r' v |vs|-v-|-V-| V ', case_details_span): 
                     
-                        match = re.search(r"(.+?)\s*(?:v|vs|-v-|-V-|-V-)\s*(.+)", details_span_less_case_id) 
+                        match = re.search(r"(.+?)\s*(?:v|vs|-v-|-V-| V )\s*(.+)", details_span_less_case_id) 
                         if match: # maybe there is a bug where the first research passes and the second one doesnt?
                             claimant = match.group(1).strip()
                             defendant = match.group(2).strip()
@@ -78,6 +76,8 @@ class CourtCaseFactory:
                                 hearing_channel_span,
                                 self.city
                             )
+                            print("1")
+                            print(court_case.claimant)
                             court_cases.append(court_case)
                     elif re.search(r"a minor", details_span_less_case_id.lower()):
                         if len(case_details_list) == 5:  # TODO think about this... why am i doing this if else clause? there was a case where it made sense I think? length 5??/
@@ -94,6 +94,8 @@ class CourtCaseFactory:
                             hearing_channel_span,
                             self.city
                             )
+                            print("2")
+                            print(court_case)
                             court_cases.append(court_case)
 
 
@@ -111,6 +113,8 @@ class CourtCaseFactory:
                                 hearing_channel_span,
                                 self.city
                             )
+                                print("3")
+                                print(court_case)
                                 court_cases.append(court_case)
 
                     

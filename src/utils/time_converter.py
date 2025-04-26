@@ -18,7 +18,6 @@ def convert_to_unix_timestamp(time_str:str, date:str) -> int:
     return unix_timestamp
 
 def parse_duration(duration_span_raw: Optional[str]) -> Optional[int]:
-    print("in parse duration method")
     if not duration_span_raw:
         print("no span?")
         return None
