@@ -77,7 +77,7 @@ CITY_SET = {
 "Middlesbrough",
 "Milton Keynes",
 "Mold",
-"Newcastle Upon Tyne",
+"Newcastle",
 "Newport",
 "Newport (IoW)", # issues in here
 "North Shields",
