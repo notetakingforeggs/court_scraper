@@ -29,6 +29,7 @@ def test_integration_no_minors(daily_cause_list_no_minors):
     
 def test_integration_mixed(daily_cause_list_mixed):
     date = "12/12/25"
+    # print(f"0000000000000000000000 {daily_cause_list_mixed}")
 
     parser = create_parser_with_html(daily_cause_list_mixed)   
 

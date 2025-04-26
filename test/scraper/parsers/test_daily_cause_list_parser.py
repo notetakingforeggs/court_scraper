@@ -23,6 +23,19 @@ def test_extract_city_normal():
     parser.extract_city()
     assert parser.city == "Manchester"
 
+def test_extract_city_newcastle():
+    html = '''
+    <html>
+        <body>
+            <b> In the County Court and Family Court at Newcastle</b>
+        </body>
+    </html>
+    '''
+    parser = create_parser_with_html(html)
+    parser.extract_city()
+    assert parser.city == "Newcastle"
+
+
 def test_extract_city_city_case_insensitive():
     html =  '''
     <html>
