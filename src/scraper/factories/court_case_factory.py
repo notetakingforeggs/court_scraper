@@ -16,7 +16,6 @@ class CourtCaseFactory:
         
             
             for row in self.messy_texts:   
-                print(f"row = {row}")
                 try:
                     if len(row)>8:
                         print(f"row lenght longer than 8, this may introduce bad data/None values") #TODO fix this, leaving them out for now
