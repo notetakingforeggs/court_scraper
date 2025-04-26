@@ -34,7 +34,7 @@ class DailyCauseListParser:
         '''Extract all text from table data tahs in rows.'''
 
         # select only rows with times in
-        rows = self.case_soup.findAll("tr") 
+        rows = self.case_soup.find_all("tr") 
         rows_with_times = []
         
         for row in rows:

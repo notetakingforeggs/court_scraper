@@ -23,7 +23,7 @@ def test_extract_city_normal():
     parser.extract_city()
     assert parser.city == "Manchester"
 
-def test_city_case_insensitive():
+def test_extract_city_city_case_insensitive():
     html =  '''
     <html>
         <body>
@@ -35,7 +35,7 @@ def test_city_case_insensitive():
     parser.extract_city()
     assert parser.city == "Manchester"
 
-def test_no_city_name():
+def test_extract_city_no_city_name():
     html =  '''
     <html>
         <body>
@@ -47,7 +47,7 @@ def test_no_city_name():
     parser.extract_city()
     assert parser.city == None
     
-def test_no_b_tag():
+def test_extract_city_no_b_tag():
     html =  '''
     <html>
         <body>
@@ -59,13 +59,13 @@ def test_no_b_tag():
     parser.extract_city()
     assert parser.city == None
 
-def test_no_html():
+def test_extract_city_no_html():
     html =  ""
     parser = create_parser_with_html(html)
     parser.extract_city()
     assert parser.city == None
 
-def multiple_b_tags():
+def test_multiple_extract_city_b_tags():
     html =  '''
     <html>
         <body>
@@ -77,3 +77,98 @@ def multiple_b_tags():
     parser = create_parser_with_html(html)
     parser.extract_city()
     assert parser.city == "Manchester"
+
+''' --- Extract Rows --- '''
+
+def test_extract_rows_normal():
+    html = '''
+        <tr style="page-break-inside:avoid">
+    <td width="3" valign="top" style="width:2.25pt;border:none;padding:1.95pt 1.95pt 1.95pt 1.95pt">
+    <p class="MsoNormal" style="margin-bottom:0cm;line-height:normal"><span lang="EN-US" style="font-size:8.0pt">&nbsp;</span></p>
+    </td>
+    <td width="3" valign="top" style="width:2.25pt;border:none;padding:1.95pt 1.95pt 1.95pt 1.95pt">
+    <p class="MsoNormal" style="margin-bottom:0cm;line-height:normal"><span lang="EN-US" style="font-size:8.0pt">&nbsp;</span></p>
+    </td>
+    <td width="91" valign="top" style="width:68.6pt;border:solid black 1.0pt;     border-top:none;padding:1.95pt 1.95pt 1.95pt 1.95pt">
+    <p class="MsoNormal" style="margin-bottom:0cm;line-height:normal"><span lang="EN-US" style="font-size:8.0pt;font-family:&quot;Segoe UI&quot;,sans-serif;     color:black">10:00 AM</span></p>
+    </td>
+    <td width="37" valign="top" style="width:27.5pt;border-top:none;border-left:     none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;     padding:1.95pt 1.95pt 1.95pt 1.95pt">
+    <p class="MsoNormal" style="margin-bottom:0cm;line-height:normal"><span lang="EN-US" style="font-size:8.0pt;font-family:&quot;Segoe UI&quot;,sans-serif;     color:black">30 minutes</span></p>
+    </td>
+    <td width="292" valign="top" style="width:218.9pt;border-top:none;border-left:     none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;     padding:1.95pt 1.95pt 1.95pt 1.95pt">
+    <p class="MsoNormal" style="margin-bottom:0cm;line-height:normal"><span lang="EN-US" style="font-size:8.0pt;font-family:&quot;Segoe UI&quot;,sans-serif;     color:black">AF25F00027 IMPEY v GAREZE </span></p>
+    </td>
+    <td width="102" valign="top" style="width:76.6pt;border-top:none;border-left:     none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;     padding:1.95pt 1.95pt 1.95pt 1.95pt">
+    <p class="MsoNormal" style="margin-bottom:0cm;line-height:normal"><span lang="EN-US" style="font-size:8.0pt;font-family:&quot;Segoe UI&quot;,sans-serif;     color:black">Family Law Injunction (ex-parte)</span></p>
+    </td>
+    <td width="124" valign="top" style="width:93.2pt;border-top:none;border-left:     none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;     padding:1.95pt 1.95pt 1.95pt 1.95pt">
+    <p class="MsoNormal" style="margin-bottom:0cm;line-height:normal"><span lang="EN-US" style="font-size:8.0pt;font-family:&quot;Segoe UI&quot;,sans-serif;     color:black">In Person</span></p>
+    </td>
+   </tr>
+    '''
+    parser = create_parser_with_html(html)
+    row_texts_messy = parser.extract_case_rows()
+    assert len(row_texts_messy) == 1
+
+def test_extract_rows_no_AM_or_PM():
+    html = '''
+        <tr style="page-break-inside:avoid">
+    <td width="3" valign="top" style="width:2.25pt;border:none;padding:1.95pt 1.95pt 1.95pt 1.95pt">
+    <p class="MsoNormal" style="margin-bottom:0cm;line-height:normal"><span lang="EN-US" style="font-size:8.0pt">&nbsp;</span></p>
+    </td>
+    <td width="3" valign="top" style="width:2.25pt;border:none;padding:1.95pt 1.95pt 1.95pt 1.95pt">
+    <p class="MsoNormal" style="margin-bottom:0cm;line-height:normal"><span lang="EN-US" style="font-size:8.0pt">&nbsp;</span></p>
+    </td>
+    <td width="91" valign="top" style="width:68.6pt;border:solid black 1.0pt;     border-top:none;padding:1.95pt 1.95pt 1.95pt 1.95pt">
+    <p class="MsoNormal" style="margin-bottom:0cm;line-height:normal"><span lang="EN-US" style="font-size:8.0pt;font-family:&quot;Segoe UI&quot;,sans-serif;     color:black">10:00 </span></p>
+    </td>
+    <td width="37" valign="top" style="width:27.5pt;border-top:none;border-left:     none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;     padding:1.95pt 1.95pt 1.95pt 1.95pt">
+    <p class="MsoNormal" style="margin-bottom:0cm;line-height:normal"><span lang="EN-US" style="font-size:8.0pt;font-family:&quot;Segoe UI&quot;,sans-serif;     color:black">30 minutes</span></p>
+    </td>
+    <td width="292" valign="top" style="width:218.9pt;border-top:none;border-left:     none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;     padding:1.95pt 1.95pt 1.95pt 1.95pt">
+    <p class="MsoNormal" style="margin-bottom:0cm;line-height:normal"><span lang="EN-US" style="font-size:8.0pt;font-family:&quot;Segoe UI&quot;,sans-serif;     color:black">AF25F00027 IMPEY v GAREZE </span></p>
+    </td>
+    <td width="102" valign="top" style="width:76.6pt;border-top:none;border-left:     none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;     padding:1.95pt 1.95pt 1.95pt 1.95pt">
+    <p class="MsoNormal" style="margin-bottom:0cm;line-height:normal"><span lang="EN-US" style="font-size:8.0pt;font-family:&quot;Segoe UI&quot;,sans-serif;     color:black">Family Law Injunction (ex-parte)</span></p>
+    </td>
+    <td width="124" valign="top" style="width:93.2pt;border-top:none;border-left:     none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;     padding:1.95pt 1.95pt 1.95pt 1.95pt">
+    <p class="MsoNormal" style="margin-bottom:0cm;line-height:normal"><span lang="EN-US" style="font-size:8.0pt;font-family:&quot;Segoe UI&quot;,sans-serif;     color:black">In Person</span></p>
+    </td>
+   </tr>
+    '''
+    parser = create_parser_with_html(html)
+    row_texts_messy = parser.extract_case_rows()
+    assert len(row_texts_messy) == 0
+
+
+def test_extract_rows_AM_in_word():
+    html = '''
+        <tr style="page-break-inside:avoid">
+    <td width="3" valign="top" style="width:2.25pt;border:none;padding:1.95pt 1.95pt 1.95pt 1.95pt">
+    <p class="MsoNormal" style="margin-bottom:0cm;line-height:normal"><span lang="EN-US" style="font-size:8.0pt">&nbsp;</span></p>
+    </td>
+    <td width="3" valign="top" style="width:2.25pt;border:none;padding:1.95pt 1.95pt 1.95pt 1.95pt">
+    <p class="MsoNormal" style="margin-bottom:0cm;line-height:normal"><span lang="EN-US" style="font-size:8.0pt">&nbsp;</span></p>
+    </td>
+    <td width="91" valign="top" style="width:68.6pt;border:solid black 1.0pt;     border-top:none;padding:1.95pt 1.95pt 1.95pt 1.95pt">
+    <p class="MsoNormal" style="margin-bottom:0cm;line-height:normal"><span lang="EN-US" style="font-size:8.0pt;font-family:&quot;Segoe UI&quot;,sans-serif;     color:black">10:00 </span></p>
+    </td>
+    <td width="37" valign="top" style="width:27.5pt;border-top:none;border-left:     none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;     padding:1.95pt 1.95pt 1.95pt 1.95pt">
+    <p class="MsoNormal" style="margin-bottom:0cm;line-height:normal"><span lang="EN-US" style="font-size:8.0pt;font-family:&quot;Segoe UI&quot;,sans-serif;     color:black">30 minutes</span></p>
+    </td>
+    <td width="292" valign="top" style="width:218.9pt;border-top:none;border-left:     none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;     padding:1.95pt 1.95pt 1.95pt 1.95pt">
+    <p class="MsoNormal" style="margin-bottom:0cm;line-height:normal"><span lang="EN-US" style="font-size:8.0pt;font-family:&quot;Segoe UI&quot;,sans-serif;     color:black">AF25F00027 IMPEYAM v GAREZE </span></p>
+    </td>
+    <td width="102" valign="top" style="width:76.6pt;border-top:none;border-left:     none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;     padding:1.95pt 1.95pt 1.95pt 1.95pt">
+    <p class="MsoNormal" style="margin-bottom:0cm;line-height:normal"><span lang="EN-US" style="font-size:8.0pt;font-family:&quot;Segoe UI&quot;,sans-serif;     color:black">Family Law Injunction (ex-parte)</span></p>
+    </td>
+    <td width="124" valign="top" style="width:93.2pt;border-top:none;border-left:     none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;     padding:1.95pt 1.95pt 1.95pt 1.95pt">
+    <p class="MsoNormal" style="margin-bottom:0cm;line-height:normal"><span lang="EN-US" style="font-size:8.0pt;font-family:&quot;Segoe UI&quot;,sans-serif;     color:black">In Person</span></p>
+    </td>
+   </tr>
+    '''
+    parser = create_parser_with_html(html)
+    row_texts_messy = parser.extract_case_rows()
+    assert len(row_texts_messy) == 0
+
+    #TODO more tests could include... no html, loads of rows?  lowecase, maybe more
