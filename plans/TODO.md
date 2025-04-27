@@ -60,9 +60,18 @@ steps now though...
 
 1. ~~fix current tests~~
 2. ~~clean up duration strings~~
-3. consider refactoring any sprawling methods into smaller subunits
-4. build out test suite for scraping including full page scrape for normal case
+3. ~~consider refactoring any sprawling methods into smaller subunits~~
+4. ~~build out test suite for scraping including full page scrape for normal case~~
 5. implement conditional scraping for non normal court pages - here use polymorphism? and create different scraper classes?
+
+bugs to iron out: 
+
+1. brighton style page
+2. over 8 but common case (disregard trailing empty spans)
+3. single empty leading span resulting in duration parsing error
+
+_There will be more bugs and I haven't got every different page shape accounted for, but i think i need to move on as I am getting restless_
+
 
 ## Atypical daily cause strcutres:
 - bedford
@@ -71,3 +80,5 @@ steps now though...
 - Birmingham some normal type but heading not bold...
 - many other birmingham ones
 - 
+
+
