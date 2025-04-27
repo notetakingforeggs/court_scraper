@@ -19,11 +19,11 @@ class DailyCauseListParser:
 
         court_name_elem = self.case_soup.find("title")
         
-        court_name_string = court_name_elem.get_text(strip=True) if court_name_elem else "Unknown Court"
-        print(court_name_string)
+        page_title = court_name_elem.get_text(strip=True) if court_name_elem else "Unknown Court"
+        print(f"page title: {page_title}")
         for c in CITY_SET:
             city_pattern = rf"\b{re.escape(c.lower())}\b"
-            if re.search(city_pattern, court_name_string.lower()):
+            if re.search(city_pattern, page_title.lower()):
                 self.city = c    
 
         if self.city == None:
@@ -48,12 +48,12 @@ class DailyCauseListParser:
                     rows_with_times.append(row)
 
 
-        case_count = 1       
+        case_count = 0       
         row_texts_messy = []
         for row in rows_with_times:
             spans = row.find_all("span")     
             texts = [span.text.strip() for span in spans]
             row_texts_messy.append(texts)
             case_count += 1 
-        print(f"{self.city}: number of rows of messy texts containing regex pattern (pre-cases): {case_count}")
+        print(f"{self.city}: has the following no of rows selected for (pre-cases): {case_count}")
         return row_texts_messy

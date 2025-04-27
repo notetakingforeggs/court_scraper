@@ -26,18 +26,18 @@ class CourtCaseFactory:
                             print(f"tried to unpack, and got exception: {e}")
                             continue
                     elif len(row) == 8:
-                        print("88888888888888")
+                        # print("88888888888888")
                         start_time_span, duration_span, case_details_span_1, case_details_span_2, hearing_type_span, hearing_channel_span = row[2:8]
                         case_details_span = case_details_span_1 + case_details_span_2
                     elif len(row) == 7:
-                        print("77777777777")
+                        # print("77777777777")
                         start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row[2:7]
-                        print(start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span)
+                        # print(start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span)
                     elif len(row) == 6: # No rows have six?
-                        print("66666666666")
+                        # print("66666666666")
                         _, start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row
                     elif len(row) == 5:
-                        print("5555555555")
+                        # print("5555555555")
                         start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row
                     else:
                         print(f"unexpected row size, skipping this one {row}")

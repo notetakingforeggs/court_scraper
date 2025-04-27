@@ -63,3 +63,11 @@ steps now though...
 3. consider refactoring any sprawling methods into smaller subunits
 4. build out test suite for scraping including full page scrape for normal case
 5. implement conditional scraping for non normal court pages - here use polymorphism? and create different scraper classes?
+
+## Atypical daily cause strcutres:
+- bedford
+- basildon county/family
+- birkenhead
+- Birmingham some normal type but heading not bold...
+- many other birmingham ones
+- 

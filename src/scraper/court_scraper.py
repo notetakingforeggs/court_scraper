@@ -68,6 +68,6 @@ class CourtScraper:
 
                 # insert court case into db
                 insert_court_case(case, court_id)
-                print(f"{self.city} has {len(court_cases)} court cases")
+            print(f"{self.city} has {len(court_cases)} court cases")
 
      

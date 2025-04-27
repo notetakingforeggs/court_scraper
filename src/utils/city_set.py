@@ -15,7 +15,7 @@ CITY_SET = {
 "Blackpool",
 "Blackwood",
 "Boston",
-"Bournemouth and Poole",
+"Bournemouth",
 "Bradford",
 "Brentford",
 "Brighton",
