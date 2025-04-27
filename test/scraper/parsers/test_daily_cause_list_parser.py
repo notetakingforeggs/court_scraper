@@ -14,18 +14,26 @@ def create_parser_with_html(html):
 def test_extract_city_normal():
     html = '''
     <html>
+    <head>
+    <title>CourtServe: Birmingham County Court, District Judge Drayson 28/04/25</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+    <meta name="Generator" content="Microsoft Word 15 (filtered)">
+    </head>
         <body>
-            <b>Manchester Crown Court - Civil Division</b>
+            <b>Birmingham County Court, District Judge Drayson 28/04/25</b>
         </body>
     </html>
     '''
     parser = create_parser_with_html(html)
     parser.extract_city()
-    assert parser.city == "Manchester"
+    assert parser.city == "Birmingham"
 
 def test_extract_city_newcastle():
     html = '''
     <html>
+        <head>
+        <title>CourtServe: Newcastle County Court, District Judge Drayson 28/04/25</title>
+        </head>
         <body>
             <b> In the County Court and Family Court at Newcastle</b>
         </body>
@@ -39,6 +47,9 @@ def test_extract_city_newcastle():
 def test_extract_city_city_case_insensitive():
     html =  '''
     <html>
+        <head>
+        <title>CourtServe: manchester County Court, District Judge Drayson 28/04/25</title>
+        </head>
         <body>
             <b>manchester crown court - Civil Division</b>
         </body>
@@ -60,7 +71,7 @@ def test_extract_city_no_city_name():
     parser.extract_city()
     assert parser.city == None
     
-def test_extract_city_no_b_tag():
+def test_extract_city_no_head_tag():
     html =  '''
     <html>
         <body>
@@ -78,18 +89,6 @@ def test_extract_city_no_html():
     parser.extract_city()
     assert parser.city == None
 
-def test_multiple_extract_city_b_tags():
-    html =  '''
-    <html>
-        <body>
-            <b>Manchester</b>
-            <b>Chester</b>
-        </body>
-    </html>
-    '''
-    parser = create_parser_with_html(html)
-    parser.extract_city()
-    assert parser.city == "Manchester"
 
 ''' --- Extract Rows --- '''
 

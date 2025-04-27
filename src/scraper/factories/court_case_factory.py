@@ -1,7 +1,7 @@
 from db.models import CourtCase
 from utils.time_converter import parse_duration
 import re
-from pprint import pprint
+
 
 class CourtCaseFactory:
 
@@ -13,9 +13,7 @@ class CourtCaseFactory:
 
     def process_rows_to_cases(self):
             """Converts each row into a court case object."""
-            court_cases = []
-            pprint(self.messy_texts) #messy texts all good...
-        
+            court_cases = []      
             
             for row in self.messy_texts:   
                 try:
@@ -76,12 +74,8 @@ class CourtCaseFactory:
                                 hearing_channel_span,
                                 self.city
                             )
-                            print("1")
-                            print(court_case.claimant)
                             court_cases.append(court_case)
                     elif re.search(r"a minor", details_span_less_case_id.lower()):
-                        print(f"A minor found: {details_span_less_case_id.lower()}")
-                        print(f"debug w repr: {repr(details_span_less_case_id.lower())}")
                         # if len(case_details_list) == 5:  # TODO think about this... why am i doing this if else clause? there was a case where it made sense I think? length 5??/
                         court_case = CourtCase(
                         case_id,
@@ -96,14 +90,9 @@ class CourtCaseFactory:
                         hearing_channel_span,
                         self.city
                         )
-                        print("2")
-                        print(court_case)
                         court_cases.append(court_case)
 
-
                     else: 
-                            print(f"no x vs y nor A minor found : {details_span_less_case_id.lower()}")
-
                             court_case = CourtCase(
                             case_id,
                             start_time_span,
@@ -117,10 +106,7 @@ class CourtCaseFactory:
                             hearing_channel_span,
                             self.city
                         )
-                            print("3")
-                            print(court_case)
                             court_cases.append(court_case)
-
                     
                 except (IndexError, ValueError)  as e:
                     print(f"issue with unpacking {e}\n Row: {row}") # this may now be redundant due to the elif chain?     

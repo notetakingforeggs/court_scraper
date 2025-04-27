@@ -17,7 +17,7 @@ class DailyCauseListParser:
         if not self.case_soup:
             print("no soup")
 
-        court_name_elem = self.case_soup.find("b")
+        court_name_elem = self.case_soup.find("title")
         
         court_name_string = court_name_elem.get_text(strip=True) if court_name_elem else "Unknown Court"
         print(court_name_string)
@@ -30,8 +30,8 @@ class DailyCauseListParser:
             print("Issue finding city for this court")# TODO better logging here
         return self.city # returning city name for easier debugging in main/nb
     
-    def extract_case_rows(self):
-        '''Extract all text from table data tahs in rows.'''
+    def extract_case_rows(self)->list[str]:
+        '''Extract all text from td cells in rows that have court cases in .'''
 
         # select only rows with times in
         rows = self.case_soup.find_all("tr") 
