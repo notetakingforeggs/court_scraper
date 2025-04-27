@@ -43,7 +43,7 @@ class DailyCauseListParser:
             spans = row.find_all("span") # check for AM or PM in the span childs of the row and add to rows with times if found, all desired data has a time associated with it.
             for span in spans:
                 text = span.text
-                pattern = r"\bAM|PM\b"
+                pattern = r"\bAM|PM\b|\dam\b|\dpm\b"
                 if re.search(pattern, text):
                     rows_with_times.append(row)
 
