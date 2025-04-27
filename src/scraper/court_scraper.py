@@ -50,6 +50,7 @@ class CourtScraper:
 
             # use the same parser to extract the rows with desired info in them
             row_texts_messy  = court_list_parser.extract_case_rows()
+            print(row_texts_messy)
           
             # init a court case factory and use it to process the rows to a list of court cases
             court_case_factory = CourtCaseFactory(row_texts_messy, date, self.city)

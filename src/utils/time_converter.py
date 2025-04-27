@@ -47,4 +47,19 @@ def parse_duration(duration_span_raw: Optional[str]) -> Optional[int]:
         minutes = int(minute_match.group(1))
         return minutes
 
+def calculate_duration(start_time:str, end_time:str) -> int:
+    
+    start_time = re.sub("pm", "\spm", start_time)
+    end_time = re.sub("am", "\sam", end_time)
 
+    fmt = "%I%M %p"
+    try:
+        dt_start = datetime.strptime(start_time, fmt)
+        dt_end = datetime.strptime(end_time, fmt)
+        delta = dt_end - dt_start
+        minutes = int(delta.total_seconds // 60)
+        return minutes
+    except ValueError as e:
+        print(f"value error! {e}")
+
+ 

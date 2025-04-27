@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup as bs
-from utils import city_set
+from utils import city_set, time_converter
 import re
 
 CITY_SET = city_set.CITY_SET
@@ -49,7 +49,7 @@ class DailyCauseListParser:
             
             # case for second style of court list, exemplified by brighton.html in test resources.
             if not spans:
-                print("no spans in this row")
+                # print("no spans in this row")
                 b_tags = row.find_all("b")
                 for b in b_tags:
                     text = b.text
@@ -67,15 +67,22 @@ class DailyCauseListParser:
                 row_texts_messy.append(texts)
                 case_count += 1 
             else:
-                print("no spans in the row... getting text other ways")
+                # print("no spans in the row... getting text other ways")
                 td_tags = row.find_all("td")
-                for i, tag in enumerate(td_tags):
-                    if i == 0:
-                        start_time = tag.find("b").text.strip()
-                        row_texts_messy.append(start_time)
-                        continue
-                    row_texts_messy.append(tag.text.strip())
-                    case_count += 1
+
+                texts = [
+                    td.get_text(separator = " ", strip = True) for td in td_tags
+                ]
+                parts = re.split(r"\s*to\s*", texts[0], flags=re.IGNORECASE)
+                if len(parts) != 2:
+                    print("splitting start time/ end time produced unexpected output")
+                    return None 
+                duration = time_converter.calculate_duration(parts[0], parts[1])
+                texts[2] = duration
+                print(texts)
+                row_texts_messy.append(texts)
+
+              
 
                 continue
         print(f"{self.city}: has the following no of rows selected for (pre-cases): {case_count}")
