@@ -46,14 +46,37 @@ class DailyCauseListParser:
                 pattern = r"\bAM|PM\b|\dam\b|\dpm\b"
                 if re.search(pattern, text):
                     rows_with_times.append(row)
+            
+            # case for second style of court list, exemplified by brighton.html in test resources.
+            if not spans:
+                print("no spans in this row")
+                b_tags = row.find_all("b")
+                for b in b_tags:
+                    text = b.text
+                    pattern = r"\bAM|PM\b|\dam\b|\dpm\b"
+                    if re.search(pattern, text):
+                        rows_with_times.append(row)
+
 
 
         case_count = 0       
         row_texts_messy = []
         for row in rows_with_times:
-            spans = row.find_all("span")     
-            texts = [span.text.strip() for span in spans]
-            row_texts_messy.append(texts)
-            case_count += 1 
+            if (spans := row.find_all("span")):
+                texts = [span.text.strip() for span in spans]
+                row_texts_messy.append(texts)
+                case_count += 1 
+            else:
+                print("no spans in the row... getting text other ways")
+                td_tags = row.find_all("td")
+                for i, tag in enumerate(td_tags):
+                    if i == 0:
+                        start_time = tag.find("b").text.strip()
+                        row_texts_messy.append(start_time)
+                        continue
+                    row_texts_messy.append(tag.text.strip())
+                    case_count += 1
+
+                continue
         print(f"{self.city}: has the following no of rows selected for (pre-cases): {case_count}")
         return row_texts_messy
