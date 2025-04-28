@@ -46,19 +46,27 @@ def parse_duration(duration_span_raw: Optional[str]) -> Optional[int]:
     if minute_match:    
         minutes = int(minute_match.group(1))
         return minutes
+# TODO this needs sorted out, probably just pass the entire time string to it and do the logic here before passing back start time and duration and appending them to the list.
+def calculate_duration(start_and_end_times:str) -> tuple[str, int]:
+    ''' takes in the string of eg... 12:00pm to 13:00pm and returns a tuple of start time and duration'''
 
-def calculate_duration(start_time:str, end_time:str) -> int:
+    parts = re.split(r"\s*to\s*", start_and_end_times, flags=re.IGNORECASE)
+    if len(parts) != 2:
+        print("splitting start time/ end time produced unexpected output")
+        return None 
     
-    start_time = re.sub("pm", "\spm", start_time)
-    end_time = re.sub("am", "\sam", end_time)
+    start_time = re.sub(r'(?i)(am|pm)$', r' \1', parts[0])
+    end_time = re.sub(r'(?i)(am|pm)$', r' \1', parts[1])
+    # print(f"start time: {start_time}, end time : {end_time}")
 
-    fmt = "%I%M %p"
+    fmt = "%I:%M %p"
     try:
         dt_start = datetime.strptime(start_time, fmt)
         dt_end = datetime.strptime(end_time, fmt)
         delta = dt_end - dt_start
-        minutes = int(delta.total_seconds // 60)
-        return minutes
+        print(delta.total_seconds)
+        minutes = int(delta.total_seconds()) // 60
+        return (start_time, minutes)
     except ValueError as e:
         print(f"value error! {e}")
 

@@ -1,16 +1,10 @@
 from bs4 import BeautifulSoup as bs
 from utils import city_set, time_converter
+from scraper.parsers.base import BaseDailyCauseListParser
 import re
 
-CITY_SET = city_set.CITY_SET
 
-class DailyCauseListParser:
-    def __init__(self, html):
-        self.html = html
-        self.CITY_SET = CITY_SET
-        self.case_soup = bs(self.html, "html.parser")
-        self.city = None # just for debugging with print statements
-
+class Flavour1DailyCauseListParser(BaseDailyCauseListParser):     
 
     def extract_city(self):
         """Extracts city / court name from the court case cause list."""
@@ -73,11 +67,9 @@ class DailyCauseListParser:
                 texts = [
                     td.get_text(separator = " ", strip = True) for td in td_tags
                 ]
-                parts = re.split(r"\s*to\s*", texts[0], flags=re.IGNORECASE)
-                if len(parts) != 2:
-                    print("splitting start time/ end time produced unexpected output")
-                    return None 
-                duration = time_converter.calculate_duration(parts[0], parts[1])
+                
+                (start_time, duration) = time_converter.calculate_duration(texts[0])
+                texts[1] = start_time
                 texts[2] = duration
                 print(texts)
                 row_texts_messy.append(texts)
