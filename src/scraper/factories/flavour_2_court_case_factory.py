@@ -2,8 +2,8 @@ from db.models import CourtCase
 from utils.time_converter import parse_duration
 import re
 
-
-class CourtCaseFactory:
+#TODO this is just copied from 1, needs complete overhaul i reckon
+class Flavour2CourtCaseFactory:
 
     def __init__(self, messy_texts, date, city):
         self.messy_texts = messy_texts
