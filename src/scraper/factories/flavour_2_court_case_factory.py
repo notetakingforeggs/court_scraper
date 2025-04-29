@@ -16,99 +16,71 @@ class Flavour2CourtCaseFactory:
             court_cases = []      
             
             for row in self.messy_texts:   
-
-                # TODO for chelmsford, issue with only one empty td at the start so trying to parse duration from courtcase ID.
-
-                try:
-                    print(f"row: {repr(row)}")
-                    if len(row)>8:
-                        # print(f"row lenght longer than 8, this may introduce bad data/None values") #TODO fix this, leaving them out for now
-                        # print(row)
-                        # continue
-                        try:
-                            start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row[2:7]
-                        except Exception as e:
-                            print(f"tried to unpack, and got exception: {e}")
-                            continue
-                    elif len(row) == 8:
-                        # print("88888888888888")
-                        start_time_span, duration_span, case_details_span_1, case_details_span_2, hearing_type_span, hearing_channel_span = row[2:8]
-                        case_details_span = case_details_span_1 + case_details_span_2
-                    elif len(row) == 7:
-                        # print("77777777777")
-                        start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row[2:7]
-                        # print(start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span)
-                    elif len(row) == 6: # No rows have six?
-                        # print("66666666666")
-                        _, start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row
-                    elif len(row) == 5:
-                        # print("5555555555")
-                        start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row
+                try: 
+                    if len(row) == 6: # Flavour 2, all rows have six maybe?
+                        start_time, duration, case_id, case_details, hearing_type, hearing_channel = row
                     else:
                         print(f"unexpected row size, skipping this one {row}")
                         continue
                 
-                    # TODO some of the case details d cells have two spans in, use the re.search for v to find these cells and conditional
-                    # for two spans, consequently joining the inner text into one case details var... maybe can do this before then feeding the rows in?
-            
-                    start_time_span = (" ".join(start_time_span.split()))
-                    duration_span = parse_duration(duration_span)
-                    hearing_channel_span = " ".join(hearing_channel_span.split())
-                    hearing_type_span = " ".join(hearing_type_span.split())
-                    case_details_list = case_details_span.split(" ")
-                    case_id = case_details_list[0]
-                    details_span_less_case_id = (" ").join(case_details_list[1:])
+  
+                    hearing_channel = " ".join(hearing_channel.split())
+                    hearing_type = " ".join(hearing_type.split())
 
 
-                    if re.search(r' v |vs|-v-|-V-| V ', case_details_span): 
+                    # claimaint vs defendant type
+                    if re.search(r' v |vs|-v-|-V-| V ', case_details): 
                     
-                        match = re.search(r"(.+?)\s*(?:v|vs|-v-|-V-| V )\s*(.+)", details_span_less_case_id) 
+                        match = re.search(r"(.+?)\s*(?:v|vs|-v-|-V-| V )\s*(.+)", case_details) 
                         if match: # maybe there is a bug where the first research passes and the second one doesnt?
                             claimant = match.group(1).strip()
                             defendant = match.group(2).strip()
                             court_case = CourtCase(
                                 case_id,
-                                start_time_span,
+                                start_time,
                                 self.date,
-                                duration_span,
-                                case_details_span,
+                                duration,
+                                case_details,
                                 claimant,
                                 defendant,
                                 False,
-                                hearing_type_span,
-                                hearing_channel_span,
+                                hearing_type,
+                                hearing_channel,
                                 self.city
                             )
                             court_cases.append(court_case)
-                    elif re.search(r"a minor", details_span_less_case_id.lower()):
-                        # if len(case_details_list) == 5:  # TODO think about this... why am i doing this if else clause? there was a case where it made sense I think? length 5??/
+
+                    # TODO idk if any of these flavour 2 case lists have a minors? check and remove below if not needed...
+
+                    # subject is A Minor
+                    elif re.search(r"a minor", case_details.lower()):
                         court_case = CourtCase(
                         case_id,
-                        start_time_span,
+                        start_time,
                         self.date,
-                        duration_span,
-                        case_details_span,
+                        duration,
+                        case_details,
                         None,
                         None,
                         True,
-                        hearing_type_span,
-                        hearing_channel_span,
+                        hearing_type,
+                        hearing_channel,
                         self.city
                         )
                         court_cases.append(court_case)
-
+                    # Other
                     else: 
                             court_case = CourtCase(
                             case_id,
-                            start_time_span,
+                            start_time,
                             self.date,
-                            duration_span,
-                            case_details_span,
+                            duration,
+                            case_details,
                             None,
                             None,
                             False,
-                            hearing_type_span,
-                            hearing_channel_span,
+                            hearing_type,
+                            hearing_channel,
                             self.city
                         )
                             court_cases.append(court_case)

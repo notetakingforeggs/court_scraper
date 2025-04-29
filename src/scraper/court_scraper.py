@@ -6,11 +6,16 @@ from utils.city_set import CITY_SET
 from utils.time_converter import parse_duration
 from scraper.clients.court_client import CourtClient
 from scraper.parsers.entry_page_parser import EntryPageParser
-from scraper.parsers.daily_cause_list_parser import DailyCauseListParser
+from scraper.parsers.flavour_1_daily_cause_list_parser import Flavour1DailyCauseListParser
+from scraper.parsers.flavour_2_daily_cause_list_parser import Flavour2DailyCauseListParser
 from db.db_methods import get_court_id_by_city, insert_court_case
-from scraper.factories.court_case_factory import CourtCaseFactory
+from scraper.factories.flavour_1_court_case_factory import Flavour1CourtCaseFactory
+from scraper.factories.flavour_2_court_case_factory import Flavour2CourtCaseFactory
 import re
 from scraper.session import BASE_URL
+
+
+from scraper.flavours import flavours
 
 CASE_LIST_BASE_URL = "https://www.courtserve.net/courtlists/viewcourtlistv2.php"
 
@@ -44,16 +49,24 @@ class CourtScraper:
             # use the http client to get the text from the daily cause list page
             case_list_response_text = self.court_client.fetch_case_list(CASE_LIST_BASE_URL + new_tab_url)            
       
+            # check case list page for flavor
+            flavour = flavours.detect_Flavour(case_list_response_text)
+           
             # init another parser, specifically for daily cause list pages and use it to get the city
-            court_list_parser  = DailyCauseListParser(case_list_response_text)
+            court_list_parser  = flavour.parser_class(case_list_response_text)
+
+            # debug line to work with specific flavours only - uncomment as needed
+            # if isinstance(court_list_parser, Flavour1DailyCauseListParser):
+            #     print("Flavour x SKIPPING")
+            #     continue
+
             self.city = court_list_parser.extract_city()
 
             # use the same parser to extract the rows with desired info in them
             row_texts_messy  = court_list_parser.extract_case_rows()
-            print(row_texts_messy)
           
             # init a court case factory and use it to process the rows to a list of court cases
-            court_case_factory = CourtCaseFactory(row_texts_messy, date, self.city)
+            court_case_factory = flavour.factory_class(row_texts_messy, date, self.city)
             court_cases = court_case_factory.process_rows_to_cases()
 
             # check list not null, and that each city has a corresponding id in the db (second check could be phased out later maybe?)

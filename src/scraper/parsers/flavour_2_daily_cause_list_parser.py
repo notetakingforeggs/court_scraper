@@ -4,7 +4,7 @@ from scraper.parsers.base import BaseDailyCauseListParser
 import re
 
 
-class Flavour1DailyCauseListParser(BaseDailyCauseListParser):     
+class Flavour2DailyCauseListParser(BaseDailyCauseListParser):     
 
     def __init__(self, html):
         super().__init__(html)
@@ -19,20 +19,31 @@ class Flavour1DailyCauseListParser(BaseDailyCauseListParser):
         for row in rows:
             if row.find("tr"): # ignore rows that contain other rows, as only the most deeply nested are desired to avoid duplication
                 continue
-            spans = row.find_all("span") # check for AM or PM in the span childs of the row and add to rows with times if found, all desired data has a time associated with it.
-            for span in spans:
-                text = span.text
+
+            # case for second style of court list, exemplified by brighton.html in test resources.
+            b_tags = row.find_all("b")
+            for b in b_tags:
+                text = b.text
                 pattern = r"\bAM|PM\b|\dam\b|\dpm\b"
                 if re.search(pattern, text):
                     rows_with_times.append(row)
-    
+
+
+
         case_count = 0       
         row_texts_messy = []
         for row in rows_with_times:
-            if (spans := row.find_all("span")):
-                texts = [span.text.strip() for span in spans]
-                row_texts_messy.append(texts)
-                case_count += 1 
-          
+            
+                td_tags = row.find_all("td")
+
+                texts = [
+                    td.get_text(separator = " ", strip = True) for td in td_tags
+                ]
+                
+                (start_time, duration) = time_converter.calculate_duration(texts[0])
+                texts[0] = start_time
+                texts.insert(1,duration)
+                row_texts_messy.append(texts)            
+                continue
         print(f"{self.city}: has the following no of rows selected for (pre-cases): {case_count}")
         return row_texts_messy

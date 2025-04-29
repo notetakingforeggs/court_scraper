@@ -64,7 +64,6 @@ def calculate_duration(start_and_end_times:str) -> tuple[str, int]:
         dt_start = datetime.strptime(start_time, fmt)
         dt_end = datetime.strptime(end_time, fmt)
         delta = dt_end - dt_start
-        print(delta.total_seconds)
         minutes = int(delta.total_seconds()) // 60
         return (start_time, minutes)
     except ValueError as e:

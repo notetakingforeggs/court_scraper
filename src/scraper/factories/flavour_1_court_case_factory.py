@@ -22,9 +22,6 @@ class Flavour1CourtCaseFactory:
                 try:
                     print(f"row: {repr(row)}")
                     if len(row)>8:
-                        # print(f"row lenght longer than 8, this may introduce bad data/None values") #TODO fix this, leaving them out for now
-                        # print(row)
-                        # continue
                         try:
                             start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row[2:7]
                         except Exception as e:
