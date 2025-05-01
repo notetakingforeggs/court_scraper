@@ -3,9 +3,32 @@ import re
 from typing import Optional
 
 def convert_to_unix_timestamp(time_str:str, date:str) -> int:
+    
+    m = re.match(
+        r"""(?xi)
+        ^\s*
+        (\d{1,2})
+        :(\d{1,2})
+        (?: :\d{1,2})?
+        \s*
+        {am|pm}
+        \s*
+        $    
+        """
+    )
+    if not m:
+        raise ValueError(f"unexpected time format {time_str!r}")
+
+    hour, minute, mer = m.groups()
+    minute = minute.zfill(2)
+    mer = mer.upper()
+    clean_time = f"{hour}:{minute} {mer}"
+
+
+
     # Format time string
     format = "%I:%M %p" 
-    parsed_time = datetime.strptime(time_str, format).time()
+    parsed_time = datetime.strptime(clean_time, format).time()
 
     # Get todays date and combine to make datetime
     date_format = "%d/%m/%y"
