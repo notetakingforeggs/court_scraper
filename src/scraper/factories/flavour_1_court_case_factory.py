@@ -1,5 +1,5 @@
 from db.models import CourtCase
-from utils.time_converter import parse_duration
+from utils.time_converter import parse_duration, normalise_start_time
 import re
 
 
@@ -20,7 +20,7 @@ class Flavour1CourtCaseFactory:
                 # TODO for chelmsford, issue with only one empty td at the start so trying to parse duration from courtcase ID.
 
                 try:
-                    print(f"row: {repr(row)}")
+                    print(f"flav1 ccf\n row: {repr(row)}")
                     if len(row)>8:
                         try:
                             start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row[2:7]
@@ -41,6 +41,8 @@ class Flavour1CourtCaseFactory:
                     elif len(row) == 5:
                         # print("5555555555")
                         start_time_span, duration_span, case_details_span, hearing_type_span, hearing_channel_span = row
+                    elif len(row) == 4:
+                        start_time_span, _, case_id, case_details_span, duration_span, _, _ = row
                     else:
                         print(f"unexpected row size, skipping this one {row}")
                         continue
@@ -48,7 +50,7 @@ class Flavour1CourtCaseFactory:
                     # TODO some of the case details d cells have two spans in, use the re.search for v to find these cells and conditional
                     # for two spans, consequently joining the inner text into one case details var... maybe can do this before then feeding the rows in?
             
-                    start_time_span = (" ".join(start_time_span.split()))
+                    start_time_span = normalise_start_time(" ".join(start_time_span.split()))
                     duration_span = parse_duration(duration_span)
                     hearing_channel_span = " ".join(hearing_channel_span.split())
                     hearing_type_span = " ".join(hearing_type_span.split())

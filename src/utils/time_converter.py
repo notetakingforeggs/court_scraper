@@ -2,8 +2,8 @@ from datetime import datetime, timezone
 import re
 from typing import Optional
 
-def convert_to_unix_timestamp(time_str:str, date:str) -> int:
-    
+def normalise_start_time(start_time: str) -> str:
+     
     m = re.match(
         r"""(?xi)
         ^\s*
@@ -11,24 +11,27 @@ def convert_to_unix_timestamp(time_str:str, date:str) -> int:
         :(\d{1,2})
         (?: :\d{1,2})?
         \s*
-        {am|pm}
+        (am|pm)
         \s*
         $    
-        """
+        """,
+        start_time
     )
     if not m:
-        raise ValueError(f"unexpected time format {time_str!r}")
+        raise ValueError(f"unexpected time format {start_time!r}")
 
     hour, minute, mer = m.groups()
     minute = minute.zfill(2)
     mer = mer.upper()
     clean_time = f"{hour}:{minute} {mer}"
+    return clean_time
 
-
+def convert_to_unix_timestamp(time_str:str, date:str) -> int:
+    
 
     # Format time string
     format = "%I:%M %p" 
-    parsed_time = datetime.strptime(clean_time, format).time()
+    parsed_time = datetime.strptime(time_str, format).time()
 
     # Get todays date and combine to make datetime
     date_format = "%d/%m/%y"
@@ -51,7 +54,7 @@ def parse_duration(duration_span_raw: Optional[str]) -> Optional[int]:
 
 
     hour_patterns = r"(?:hour[s]?|awr[s]?)"
-    minute_patterns = r"(?:minute[s]?|munud[s]?)"
+    minute_patterns = r"(?:minute[s]?|munud[s]?|min[s]?)"
 
     full_match = re.search(rf"(\d+)\s*{hour_patterns}.*?(\d+)\s*{minute_patterns}", duration_span_raw)
     if full_match:

@@ -1,5 +1,5 @@
 from db.models import CourtCase
-from utils.time_converter import parse_duration
+from utils.time_converter import parse_duration, normalise_start_time
 import re
 
 #TODO this is just copied from 1, needs complete overhaul i reckon
@@ -17,8 +17,13 @@ class Flavour2CourtCaseFactory:
             
             for row in self.messy_texts:   
                 try: 
+                    print(f"flav2 ccf\n row: {repr(row)}")
+
                     if len(row) == 6: # Flavour 2, all rows have six maybe?
                         start_time, duration, case_id, case_details, hearing_type, hearing_channel = row
+                    #'10:00 AM', '20004883 FK,', 'PUBLIC HEARING - WITH REPORTING   RESTRICTIONS In Person', '60 mins']
+                    elif len(row) == 4:
+                         start_time, _, case_id, case_details, duration, _, _ = row
                     else:
                         print(f"unexpected row size, skipping this one {row}")
                         continue
@@ -35,6 +40,7 @@ class Flavour2CourtCaseFactory:
                         if match: # maybe there is a bug where the first research passes and the second one doesnt?
                             claimant = match.group(1).strip()
                             defendant = match.group(2).strip()
+                            start_time = normalise_start_time(start_time)
                             court_case = CourtCase(
                                 case_id,
                                 start_time,

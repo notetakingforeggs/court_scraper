@@ -45,5 +45,5 @@ class Flavour2DailyCauseListParser(BaseDailyCauseListParser):
                 texts.insert(1,duration)
                 row_texts_messy.append(texts)            
                 continue
-        print(f"{self.city}: has the following no of rows selected for (pre-cases): {case_count}")
+        print(f"{self.city}: has the following no of rows selected for (pre-cases): {case_count} - printing from flavour 2 dclp")
         return row_texts_messy
