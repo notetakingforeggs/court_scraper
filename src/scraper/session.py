@@ -4,7 +4,7 @@ import os
 from bs4 import BeautifulSoup as bs
 
 # Load credentials from environment variables (may have to change depending on where this is being called from, setting up for nb)
-load_dotenv(dotenv_path="../.env")
+load_dotenv(dotenv_path="../../.env")
 
 USERNAME = os.getenv("COURT_USERNAME")
 PASSWORD = os.getenv("COURT_PASSWORD")
@@ -34,7 +34,7 @@ def login():
     """Logs into the court website and returns an authenticated session."""
     session = requests.session()
     session.headers.update(HEADERS)
-    # print(f"username: {USERNAME}, password: {PASSWORD}")
+    print(f"username: {USERNAME}, password: {PASSWORD}")
     
     try:
         login_response = session.post(url, data=login_payload, allow_redirects=False)

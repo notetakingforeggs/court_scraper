@@ -35,6 +35,8 @@ class CourtScraper:
     # passing session from main where it is returned from the session/login call. BASE URL in main also?
     def run(self): # this function orchestrates the scraping process, and should be called from main and takes the links and dates list from the county court list scrape (change this at some point maybe?)
         # Most methods below are from this class, but i now need to move them elsewhere and call them from here.
+
+    
         for i, (link, date) in enumerate (self.links_and_dates):
             if i < 1:
                 continue
@@ -71,6 +73,7 @@ class CourtScraper:
 
             # check list not null, and that each city has a corresponding id in the db (second check could be phased out later maybe?)
             if not court_cases:
+
                 print(f"failure to get court cases for: {self.city}")
                 continue
             for case in court_cases: # iterate through scraped court cases and add to db

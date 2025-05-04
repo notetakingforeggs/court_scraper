@@ -74,11 +74,8 @@ _There will be more bugs and I haven't got every different page shape accounted 
 
 
 ## Atypical daily cause strcutres:
-- bedford
-- basildon county/family
-- birkenhead
-- Birmingham some normal type but heading not bold...
-- many other birmingham ones
-- 
+
+__ There are approx 37 courts I know are failing""
+ I should use logging to keep track of this, adding the court name/url to a log upon failure.
 
 

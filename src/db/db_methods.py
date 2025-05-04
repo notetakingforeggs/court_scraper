@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 from db.models import CourtCase
 
-load_dotenv(dotenv_path="../.env.dev", override=True) # override means that it removes any lingering .env vars
+load_dotenv(dotenv_path="../../.env.dev", override=True) # override means that it removes any lingering .env vars
 
 def get_connection():
     return psycopg2.connect(
@@ -19,6 +19,7 @@ def get_connection():
 
 def get_court_id_by_city(city):
     conn = get_connection()  
+    
     try:
         with conn:
             with conn.cursor() as cur:
@@ -29,9 +30,10 @@ def get_court_id_by_city(city):
                 row = (cur.fetchone())
                 return row[0] if row else None
                 
-
+    except Exception as e:
+        print(f"issue with getting court by ID: {e}")
     finally:
-       conn.close()
+         conn.close()
         
 def insert_court_case(court_case:CourtCase, court_id):
     conn = get_connection()
