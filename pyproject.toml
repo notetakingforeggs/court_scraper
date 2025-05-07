@@ -1,0 +1,47 @@
+# Specifies the build system requirements and backend
+[build-system]
+# Python packages needed to build your project
+requires = ["setuptools>=42", "wheel"]
+# The tool that will be used to build the package
+build-backend = "setuptools.build_meta"
+
+# Core project metadata - this is the most important section
+[project]
+# The name people will use when installing your package (pip install court_scraper) 
+name = "court_scraper"
+# Current version - follow semantic versioning (major.minor.patch)
+version = "0.1.0"
+# Short description of what your package does
+description = "A tool for scraping court data from CourtServe"
+# Path to your README file which will be displayed on PyPI
+readme = "README.md"
+# Minimum Python version required to use your package
+requires-python = ">=3.10"
+# License information
+license = {text = "MIT"}
+# Runtime dependencies - packages that must be installed for your code to work
+dependencies = [
+    # Format: "package_name>=minimum_version"
+    "requests>=2.25.0",
+    "beautifulsoup4>=4.9.0",
+    # Add your other dependencies here
+]
+
+# Optional dependencies - grouped by purpose
+[project.optional-dependencies]
+# Development dependencies - tools for development but not needed for users
+dev = [
+    "pytest>=6.0",  # For testing
+    "black",        # For code formatting
+    "isort",        # For import sorting
+]
+
+# Setuptools-specific configuration
+[tool.setuptools]
+# Explicit list of packages to include (alternatively can use find packages)
+packages = ["court_scraper"]
+
+# You can add other tool configurations like:
+# [tool.black] - for black formatter settings
+# [tool.pytest] - for pytest configuration 
+# [tool.mypy] - for type checking settings

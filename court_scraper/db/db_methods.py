@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 from db.models import CourtCase
 
-load_dotenv(dotenv_path="../../.env.dev", override=True) # override means that it removes any lingering .env vars
+# load_dotenv(dotenv_path="../../.env.dev", override=True) # override means that it removes any lingering .env vars
 
 def get_connection():
     return psycopg2.connect(

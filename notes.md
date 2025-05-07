@@ -9,3 +9,7 @@
 __Don't let anything fail silently, ever.... what a pain__
 
 - GPT is not good enough at doing structured data yet, don't use it, or if used it will need a heavy vetting/editing.
+
+# dotenv --file .env.dev run -- python src/main.py
+
+^ is to run with dotenv or .env.dev
