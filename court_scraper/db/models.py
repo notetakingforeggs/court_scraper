@@ -1,7 +1,5 @@
-# For data models only
-
 from dataclasses import dataclass,field
-from utils.time_converter import convert_to_unix_timestamp
+from court_scraper.utils.time_converter import convert_to_unix_timestamp
 
 @dataclass
 class CourtCase:

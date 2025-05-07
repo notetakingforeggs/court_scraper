@@ -1,11 +1,9 @@
 import psycopg2
 import os
-from dotenv import load_dotenv
-
-from db.models import CourtCase
-
+from court_scraper.db.models import CourtCase
+from dotenv import load_dotenv, find_dotenv
 # load_dotenv(dotenv_path="../../.env.dev", override=True) # override means that it removes any lingering .env vars
-
+load_dotenv(find_dotenv())
 def get_connection():
     return psycopg2.connect(
         dbname = os.getenv("DB_NAME"),

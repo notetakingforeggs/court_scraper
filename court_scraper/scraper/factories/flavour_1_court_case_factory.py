@@ -1,5 +1,5 @@
-from db.models import CourtCase
-from utils.time_converter import parse_duration, normalise_start_time
+from court_scraper.db.models import CourtCase
+from court_scraper.utils.time_converter import parse_duration, normalise_start_time
 import re
 
 

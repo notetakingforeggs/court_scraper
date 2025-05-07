@@ -1,4 +1,3 @@
-# TODO duration needs cleaned but tbh im not really going to use that so can do it later.
 
 from court_scraper.scraper.clients.court_client import CourtClient
 from court_scraper.scraper.parsers.entry_page_parser import EntryPageParser

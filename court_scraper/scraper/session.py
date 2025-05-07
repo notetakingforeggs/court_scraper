@@ -1,9 +1,11 @@
 import requests
 import os
 from bs4 import BeautifulSoup as bs
+from dotenv import load_dotenv, find_dotenv
 
 # Load credentials from environment variables (may have to change depending on where this is being called from, setting up for nb)
-# load_dotenv(dotenv_path="../../.env")
+
+load_dotenv(find_dotenv())
 
 USERNAME = os.getenv("COURT_USERNAME")
 PASSWORD = os.getenv("COURT_PASSWORD")
