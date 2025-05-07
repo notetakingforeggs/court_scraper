@@ -1,21 +1,10 @@
 # TODO duration needs cleaned but tbh im not really going to use that so can do it later.
 
-from db.models import CourtCase
-from bs4 import BeautifulSoup as bs
-from utils.city_set import CITY_SET
-from utils.time_converter import parse_duration
-from scraper.clients.court_client import CourtClient
-from scraper.parsers.entry_page_parser import EntryPageParser
-from scraper.parsers.flavour_1_daily_cause_list_parser import Flavour1DailyCauseListParser
-from scraper.parsers.flavour_2_daily_cause_list_parser import Flavour2DailyCauseListParser
-from db.db_methods import get_court_id_by_city, insert_court_case
-from scraper.factories.flavour_1_court_case_factory import Flavour1CourtCaseFactory
-from scraper.factories.flavour_2_court_case_factory import Flavour2CourtCaseFactory
-import re
-from scraper.session import BASE_URL
-
-
-from scraper.flavours import flavours
+from court_scraper.scraper.clients.court_client import CourtClient
+from court_scraper.scraper.parsers.entry_page_parser import EntryPageParser
+from court_scraper.db.db_methods import get_court_id_by_city, insert_court_case
+from court_scraper.scraper.session import BASE_URL
+from court_scraper.scraper.flavours import flavours
 
 CASE_LIST_BASE_URL = "https://www.courtserve.net/courtlists/viewcourtlistv2.php"
 

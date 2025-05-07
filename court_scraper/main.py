@@ -1,10 +1,9 @@
 import sys
 sys.path.append('../src/')  
-from scraper.session import login
-from scraper.fetch import get_court_links_and_dates
-from scraper.court_scraper import CourtScraper
-
-from db.db_methods import get_connection
+from court_scraper.scraper.session import login
+from court_scraper.scraper.fetch import get_court_links_and_dates
+from court_scraper.scraper.court_scraper import CourtScraper
+from court_scraper.db.db_methods import get_connection
 
 
 def main():

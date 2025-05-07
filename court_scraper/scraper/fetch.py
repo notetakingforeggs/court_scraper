@@ -1,7 +1,7 @@
 # from requests import Session
 import requests
 from bs4 import BeautifulSoup as bs
-from scraper.session import BASE_URL
+from court_scraper.scraper.session import BASE_URL
 import re
 
 

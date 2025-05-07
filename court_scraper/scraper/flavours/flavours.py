@@ -1,8 +1,8 @@
 from typing import NamedTuple
-from scraper.parsers.flavour_1_daily_cause_list_parser import Flavour1DailyCauseListParser
-from scraper.parsers.flavour_2_daily_cause_list_parser import Flavour2DailyCauseListParser
-from scraper.factories.flavour_1_court_case_factory import Flavour1CourtCaseFactory
-from scraper.factories.flavour_2_court_case_factory import Flavour2CourtCaseFactory
+from court_scraper.scraper.parsers.flavour_1_daily_cause_list_parser import Flavour1DailyCauseListParser
+from court_scraper.scraper.parsers.flavour_2_daily_cause_list_parser import Flavour2DailyCauseListParser
+from court_scraper.scraper.factories.flavour_1_court_case_factory import Flavour1CourtCaseFactory
+from court_scraper.scraper.factories.flavour_2_court_case_factory import Flavour2CourtCaseFactory
 
 from bs4 import BeautifulSoup as bs
 
