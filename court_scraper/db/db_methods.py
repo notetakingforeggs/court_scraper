@@ -2,6 +2,7 @@ import psycopg2
 import os
 from court_scraper.db.models import CourtCase
 from dotenv import load_dotenv, find_dotenv
+import time
 # load_dotenv(dotenv_path="../../.env.dev", override=True) # override means that it removes any lingering .env vars
 load_dotenv(find_dotenv())
 def get_connection():
@@ -42,6 +43,7 @@ def insert_court_case(court_case:CourtCase, court_id):
                     '''
                         INSERT INTO court_case(
                         start_time_epoch,
+                        created_at,
                         duration,
                         case_details,
                         case_id,
@@ -52,11 +54,12 @@ def insert_court_case(court_case:CourtCase, court_id):
                         hearing_channel,
                         court_id
                         )
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                         RETURNING id
                     ''',
                     (
                         court_case.start_time_epoch,
+                        round(time.time()),
                         court_case.duration,
                         court_case.case_details,
                         court_case.case_id,
@@ -70,7 +73,7 @@ def insert_court_case(court_case:CourtCase, court_id):
                 )
         
     except psycopg2.IntegrityError as e:
-        # print(f"case already exists?: {court_case}\n {e.with_traceback}")
+        print(f"case already exists?: {court_case}\n {e.with_traceback}")
         pass
 
     finally:

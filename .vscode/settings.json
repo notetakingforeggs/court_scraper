@@ -3,19 +3,5 @@
     "python.testing.pytestEnabled": true,
     "python.testing.unittestEnabled": false,
 
-    "python.languageServer": "Pylance",
-    // for the new Python extension versions:
-    "python.analysis.engine": "Pylance",
-
-     // This runs ANY codeAction of type “source.organizeImports” on save
-    "editor.codeActionsOnSave": {
-        "source.organizeImports": "always"
-    },
-    // Scope it to Python only (optional):
-    "[python]": {
-        "editor.codeActionsOnSave": {
-        "source.organizeImports": "always"
-        }
-    }
 }
   

@@ -17,7 +17,7 @@ class Flavour2CourtCaseFactory:
             
             for row in self.messy_texts:   
                 try: 
-                    print(f"flav2 ccf\n row: {repr(row)}")
+                    # print(f"flav2 ccf\n row: {repr(row)}")
 
                     if len(row) == 6: # Flavour 2, all rows have six maybe?
                         start_time, duration, case_id, case_details, hearing_type, hearing_channel = row

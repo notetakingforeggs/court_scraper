@@ -35,7 +35,7 @@ I'm thinking to scrape at 01:00 for the next day?
 
 - ~~there is definitely at least one other semi common html structure for court pages that should be conditionally scraped/parsed~~
 
-- Newport IOW will need extra logic
+- ~~Newport IOW will need extra logic deprioritised~~
 
 - ~~Need better regex for cases like this: M00KH164 Matthew James (Joint LPA Receivers) -v- Persons Unknown, the v messing it up?~~
 
@@ -47,14 +47,13 @@ I'm thinking to scrape at 01:00 for the next day?
 
 - Not all of east london are coming through?
 
-- Maybe create a debug statement so that I can see how many courts are found per location? to compare with website to see if any are being missed.
-
-- may as well take all data whilst im here. new fields for cases without claimant/defendant structures.
+- ~~may as well take all data whilst im here. new fields for cases without claimant/defendant structures.~~
 
 - ~~DO PERSIST RAW CASE DETAILS STRING, good for reference and when parsing breaks~~
 
-- clean up duration strings, maybe also clean into minutes?
+- ~~clean up duration strings, maybe also clean into minutes?~~
 
+- need to tighten up regex for v, as some are splitting on v within words. need to exclude v when it is part of like receivers 
 ## GDPR concerns
 
 - A lot of these entries have full names of individuals in... personal data persistence == gdpr concerns
@@ -88,3 +87,13 @@ __ There are approx 37 courts I know are failing__
  I should use logging to keep track of this, adding the court name/url to a log upon failure.
 
 
+## now doing some dev ops stuff? 
+- dockerise scraper 
+- hook up scraper to psql db via compose?
+- crontab automate scraping daily at 7
+- just run it on my laptop for now
+- host on either old thinkpad (noisy?) or vps (oracle)
+
+so then i have this scraper running and populating this database, with data that i will anonymise. GDPR etc.. maybe purge it every three days to avoid storing personal data until i have the encrpytion and hashing implemented. 
+
+then i set up the backend rest endpoints to allow searching for cases by name of defendant/claimant... also by type?

@@ -1,6 +1,4 @@
-from bs4 import BeautifulSoup as bs
-from utils import city_set, time_converter
-from scraper.parsers.base import BaseDailyCauseListParser
+from court_scraper.scraper.parsers.base import BaseDailyCauseListParser
 import re
 
 

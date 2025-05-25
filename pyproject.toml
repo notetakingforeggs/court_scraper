@@ -1,7 +1,7 @@
 # Specifies the build system requirements and backend
 [build-system]
 # Python packages needed to build your project
-requires = ["setuptools>=42", "wheel"]
+requires = ["setuptools>=61.0"]
 # The tool that will be used to build the package
 build-backend = "setuptools.build_meta"
 
@@ -14,17 +14,21 @@ version = "0.1.0"
 # Short description of what your package does
 description = "A tool for scraping court data from CourtServe"
 # Path to your README file which will be displayed on PyPI
-readme = "README.md"
+# readme = "README.md"
 # Minimum Python version required to use your package
 requires-python = ">=3.10"
 # License information
-license = {text = "MIT"}
+license = "Apache-2.0"
 # Runtime dependencies - packages that must be installed for your code to work
 dependencies = [
     # Format: "package_name>=minimum_version"
     "requests>=2.25.0",
     "beautifulsoup4>=4.9.0",
-    # Add your other dependencies here
+    "psycopg2-binary==2.9.10",
+    "typing_extensions==4.12.2",
+    "python-dotenv==1.1.0",
+    "python-dateutil==2.9.0.post0", 
+    "requests==2.32.3",    
 ]
 
 # Optional dependencies - grouped by purpose

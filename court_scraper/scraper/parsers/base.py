@@ -1,5 +1,5 @@
 from typing import Optional 
-from utils import city_set
+from court_scraper.utils import city_set
 from bs4 import BeautifulSoup as bs
 import re
 
@@ -30,7 +30,7 @@ class BaseDailyCauseListParser:
         court_name_elem = self.case_soup.find("title")
         
         page_title = court_name_elem.get_text(strip=True) if court_name_elem else "Unknown Court"
-        print(f"page title: {page_title}")
+        # print(f"page title: {page_title}")
         for c in self.city_set:
             city_pattern = rf"\b{re.escape(c.lower())}\b"
             if re.search(city_pattern, page_title.lower()):
