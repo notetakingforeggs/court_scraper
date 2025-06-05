@@ -55,6 +55,7 @@ def insert_court_case(court_case:CourtCase, court_id):
                         court_id
                         )
                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        ON CONFLICT (court_id, case_id, start_time_epoch) DO NOTHING
                         RETURNING id
                     ''',
                     (
@@ -74,6 +75,8 @@ def insert_court_case(court_case:CourtCase, court_id):
         
     except psycopg2.IntegrityError as e:
         print(f"case already exists?: {court_case}\n {e.with_traceback}")
+        print(e.pgerror)
+        print(e.diag.message_detail)
         pass
 
     finally:
