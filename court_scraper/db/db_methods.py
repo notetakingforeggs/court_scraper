@@ -36,48 +36,47 @@ def get_court_id_by_city(city):
         
 def insert_court_case(court_case:CourtCase, court_id):
     conn = get_connection()
-    try:
-        with conn:
-            with conn.cursor() as cur:
-                cur.execute(
-                    '''
-                        INSERT INTO court_case(
-                        start_time_epoch,
-                        created_at,
-                        duration,
-                        case_details,
-                        case_id,
-                        claimant,
-                        defendant,
-                        is_minor,
-                        hearing_type,
-                        hearing_channel,
-                        court_id
-                        )
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                        ON CONFLICT (court_id, case_id, start_time_epoch) DO NOTHING
-                        RETURNING id
-                    ''',
-                    (
-                        court_case.start_time_epoch,
-                        round(time.time()),
-                        court_case.duration,
-                        court_case.case_details,
-                        court_case.case_id,
-                        court_case.claimant,
-                        court_case.defendant,
-                        court_case.is_minor,
-                        court_case.hearing_type,
-                        court_case.hearing_channel,
-                        court_id
-                    )
-                )
-        
-    except psycopg2.IntegrityError as e:
-        print(f"case already exists?: {court_case}\n {e.with_traceback}")
-        print(e.pgerror)
-        print(e.diag.message_detail)
-        pass
 
-    finally:
-        conn.close()
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                '''
+                    INSERT INTO court_case(
+                    start_time_epoch,
+                    created_at,
+                    duration,
+                    case_details,
+                    case_id,
+                    claimant,
+                    defendant,
+                    is_minor,
+                    hearing_type,
+                    hearing_channel,
+                    court_id
+                    )
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    ON CONFLICT (court_id, case_id, start_time_epoch) DO NOTHING
+                    RETURNING id
+                ''',
+                (
+                    court_case.start_time_epoch,
+                    round(time.time()),
+                    court_case.duration,
+                    court_case.case_details,
+                    court_case.case_id,
+                    court_case.claimant,
+                    court_case.defendant,
+                    court_case.is_minor,
+                    court_case.hearing_type,
+                    court_case.hearing_channel,
+                    court_id
+                )
+            )
+    row = cur.fetchone()
+    if row is None:
+        print("skipping duplicate")
+    else:
+        print(f"adding courtcase: {row[4]}")
+
+
+    conn.close()
